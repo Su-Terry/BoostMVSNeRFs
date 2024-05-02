@@ -1,0 +1,25 @@
+parent_cfg: configs/exps/pretrain/enerf/dtu_pretrain.yaml
+gpus: [0]
+
+save_tag: free
+
+train_dataset_module: lib.datasets.free.base
+test_dataset_module: lib.datasets.free.base
+
+enerf:
+    cas_config:
+        render_if: [False, True]
+
+train_dataset:
+    data_root: 'free_dataset' #
+    split: 'train'
+    input_h_w: [480, 736]
+    batch_size: 1
+    input_ratio: 1.
+
+test_dataset:
+    data_root: 'free_dataset' #
+    split: 'test'
+    input_h_w: [480, 736]
+    batch_size: 1
+    input_ratio: 1.

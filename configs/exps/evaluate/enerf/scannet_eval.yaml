@@ -1,0 +1,25 @@
+parent_cfg: configs/exps/pretrain/enerf/dtu_pretrain.yaml
+gpus: [0]
+
+save_tag: scannet
+
+train_dataset_module: lib.datasets.scannet_plus.base
+test_dataset_module: lib.datasets.scannet_plus.base
+
+enerf:
+    cas_config:
+        render_if: [False, True]
+
+train_dataset:
+    data_root: 'scannet_plus' #
+    split: 'train'
+    input_h_w: [480, 640]
+    batch_size: 1
+    input_ratio: 1.
+
+test_dataset:
+    data_root: 'scannet_plus' #
+    split: 'test'
+    input_h_w: [480, 640]
+    batch_size: 1
+    input_ratio: 1.

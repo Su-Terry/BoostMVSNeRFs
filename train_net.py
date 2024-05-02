@@ -1,22 +1,20 @@
-import os
-import torch
-import torch.distributed as dist
-import torch.multiprocessing
-
-from lib.config import cfg, logger
+from lib.config import cfg, args
 from lib.networks import make_network
 from lib.train import make_trainer, make_optimizer, make_lr_scheduler, make_recorder, set_lr_scheduler
 from lib.datasets import make_data_loader
-from lib.utils.net_utils import load_model, save_model, save_trained_config, load_pretrain
+from lib.utils.net_utils import load_model, save_model, load_network, save_trained_config, load_pretrain
 from lib.evaluators import make_evaluator
-from lib.utils.msg_utils import send_msg
-torch.backends.cudnn.benchmark = False
+import torch.multiprocessing
+import torch
+import torch.distributed as dist
+import os
 # torch.autograd.set_detect_anomaly(True)
 
 if cfg.fix_random:
     torch.manual_seed(0)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
+
 
 def train(cfg, network):
     train_loader = make_data_loader(cfg,
@@ -39,12 +37,10 @@ def train(cfg, network):
                              recorder,
                              cfg.trained_model_dir,
                              resume=cfg.resume)
-
     if begin_epoch == 0 and cfg.pretrain != '':
         load_pretrain(network, cfg.pretrain)
+
     set_lr_scheduler(cfg, scheduler)
-    save_trained_config(cfg)
-    
     for epoch in range(begin_epoch, cfg.train.epoch):
         recorder.epoch = epoch
         if cfg.distributed:
@@ -52,8 +48,8 @@ def train(cfg, network):
 
         train_loader.dataset.epoch = epoch
 
-        trainer.train(epoch, train_loader, optimizer, recorder, scheduler)
-        # scheduler.step()
+        trainer.train(epoch, train_loader, optimizer, recorder)
+        scheduler.step()
 
         if (epoch + 1) % cfg.save_ep == 0 and cfg.local_rank == 0:
             save_model(network, optimizer, scheduler, recorder,
@@ -72,6 +68,17 @@ def train(cfg, network):
             trainer.val(epoch, val_loader, evaluator, recorder)
 
     return network
+
+
+def test(cfg, network):
+    trainer = make_trainer(cfg, network)
+    val_loader = make_data_loader(cfg, is_train=False)
+    evaluator = make_evaluator(cfg)
+    epoch = load_network(network,
+                         cfg.trained_model_dir,
+                         resume=cfg.resume,
+                         epoch=cfg.test.epoch)
+    trainer.val(epoch, val_loader, evaluator)
 
 def synchronize():
     """
@@ -94,15 +101,17 @@ def main():
         torch.distributed.init_process_group(backend="nccl",
                                              init_method="env://")
         synchronize()
-        
+
     network = make_network(cfg)
-    send_msg('Training start: ' + cfg.exp_name + ' Machine: ' + cfg.machine, cfg)
-    train(cfg, network)
-    send_msg('Training success: ' + cfg.exp_name + ' Machine: ' + cfg.machine, cfg)
+    if args.test:
+        test(cfg, network)
+    else:
+        train(cfg, network)
     if cfg.local_rank == 0:
-        logger.info('Success!')
-        logger.info('='*80)
+        print('Success!')
+        print('='*80)
     os.system('kill -9 {}'.format(os.getpid()))
+
 
 if __name__ == "__main__":
     main()

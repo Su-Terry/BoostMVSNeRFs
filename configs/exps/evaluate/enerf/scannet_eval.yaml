@@ -1,10 +1,10 @@
 parent_cfg: configs/exps/pretrain/enerf/dtu_pretrain.yaml
 gpus: [0]
 
-save_tag: scannet
+save_tag: scannet_plus
 
-train_dataset_module: lib.datasets.scannet_plus.base
-test_dataset_module: lib.datasets.scannet_plus.base
+train_dataset_module: lib.datasets.scannet_plus.enerf_base
+test_dataset_module: lib.datasets.scannet_plus.enerf_base
 
 enerf:
     cas_config:

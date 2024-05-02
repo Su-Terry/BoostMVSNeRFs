@@ -3,8 +3,8 @@ gpus: [0]
 
 save_tag: free
 
-train_dataset_module: lib.datasets.free.base
-test_dataset_module: lib.datasets.free.base
+train_dataset_module: lib.datasets.free.enerf_base
+test_dataset_module: lib.datasets.free.enerf_base
 
 enerf:
     cas_config:

@@ -1,1 +1,1 @@
-parent_cfg: configs/exps/pretrain/enerf/dtu_pretrain.yaml
+parent_cfg: configs/exps/evaluate/enerf/base_eval.yaml

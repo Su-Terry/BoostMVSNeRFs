@@ -31,12 +31,12 @@ def _dataset_factory(is_train, is_val):
 def make_dataset(cfg, is_train=True):
     if is_train:
         args = cfg.train_dataset
-        module = cfg.train_dataset_module
-        path = cfg.train_dataset_path
+        module = cfg.dataset_module
+        path = cfg.dataset_path
     else:
         args = cfg.test_dataset
-        module = cfg.test_dataset_module
-        path = cfg.test_dataset_path
+        module = cfg.dataset_module
+        path = cfg.dataset_path
     dataset = imp.load_source(module, path).Dataset
     dataset = dataset(**args)
     return dataset

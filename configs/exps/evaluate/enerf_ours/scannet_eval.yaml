@@ -1,13 +1,6 @@
-parent_cfg: configs/exps/evaluate/enerf/base_eval.yaml
-gpus: [0]
-
-save_tag: scannet_plus
+parent_cfg: configs/exps/evaluate/enerf_ours/base_eval.yaml
 
 dataset_module: lib.datasets.scannet_plus.enerf_base
-
-enerf:
-    cas_config:
-        render_if: [False, True]
 
 train_dataset:
     data_root: 'scannet_plus' #

@@ -102,8 +102,6 @@ class Network(nn.Module):
                     im_feat=feats[f'level_{im_feat_level}'],
                     nerf_model=getattr(self, f'nerf_{i}'),
                     level=i)
-            # if i == 1:
-                # self.forward_render(ret_i, batch)
             if cfg.enerf.cas_config.depth_inv[i]:
                 ret_i.update({'depth_mvs': 1./depth})
             else:
@@ -113,11 +111,4 @@ class Network(nn.Module):
                 __import__('ipdb').set_trace()
             ret.update({key+f'_level{i}': ret_i[key] for key in ret_i})
             
-            # h, w = batch['meta'][f'h_{i}'], batch['meta'][f'w_{i}']
-            # H, W = batch['src_inps'].shape[-2:]
-            # H, W = int(H * cfg.enerf.cas_config.render_scale[i]), int(W * cfg.enerf.cas_config.render_scale[i])
-            # ret[f'rgb_level{i}'] = ret[f'rgb_level{i}'].reshape(-1, H, W, 3).permute(0, 3, 1, 2)
-            # ret[f'rgb_level{i}'] = F.interpolate(ret[f'rgb_level{i}'], size=(h, w), mode='bilinear')
-            # B = 1
-            # ret[f'rgb_level{i}'] = ret[f'rgb_level{i}'].permute(0, 2, 3, 1).reshape(B, -1, 3)
         return ret

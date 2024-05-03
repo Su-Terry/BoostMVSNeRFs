@@ -1,1 +1,1 @@
-from .make_network import make_network, make_mcp
+from .make_network import make_network

@@ -36,91 +36,48 @@ def run_network():
             total_time += time.time() - start
     print(total_time / len(data_loader))
     
-def run_mcp_train():
+def run_preprocess():
     from lib.datasets import make_data_loader
-    from lib.evaluators import make_evaluator
-    import tqdm
-    import torch
-    from lib.networks import make_network, make_mcp
+    from lib.networks import make_network
     from lib.utils import net_utils
-    import time
+    import json
 
-    network = make_mcp(cfg).cuda()
-    net_utils.load_network(network,
-                           cfg.trained_model_dir,
-                           resume=cfg.resume,
-                           epoch=cfg.test.epoch)
-    network.eval()
-
-    data_loader = make_data_loader(cfg, is_train=True)
-    evaluator = make_evaluator(cfg)
-    net_time = []
-    
-    outputs = {}
-    for batch in tqdm.tqdm(data_loader):
-        for k in batch:
-            if k != 'meta':
-                batch[k] = batch[k].cuda()
-        with torch.no_grad():
-            torch.cuda.synchronize()
-            start_time = time.time()
-            output = network(batch)
-            torch.cuda.synchronize()
-            end_time = time.time()
-        net_time.append(end_time - start_time)
-        outputs.update(output)
-    return outputs
-        
-def run_mcp_test():
-    from lib.datasets import make_data_loader
-    from lib.evaluators import make_evaluator
-    import tqdm
-    import torch
-    from lib.networks import make_network, make_mcp
-    from lib.utils import net_utils
-    import time
-
-    network = make_mcp(cfg).cuda()
-    net_utils.load_network(network,
-                           cfg.trained_model_dir,
-                           resume=cfg.resume,
-                           epoch=cfg.test.epoch)
-    network.eval()
-
-    data_loader = make_data_loader(cfg, is_train=False)
-    evaluator = make_evaluator(cfg)
-    net_time = []
-    
-    outputs = {}
-    for batch in tqdm.tqdm(data_loader):
-        for k in batch:
-            if k != 'meta':
-                batch[k] = batch[k].cuda()
-        with torch.no_grad():
-            torch.cuda.synchronize()
-            start_time = time.time()
-            output = network(batch)
-            torch.cuda.synchronize()
-            end_time = time.time()
-        net_time.append(end_time - start_time)
-        outputs.update(output)
-    return outputs
-        
-def run_mcp():
-    if 'mcp_module' not in cfg:
-        return
     print('Preprocessing mask...')
     
-    outputs_train = run_mcp_train()
-    # outputs_train = {}
-    outputs_test = run_mcp_test()
+    network = make_network(cfg, preprocess=True).cuda()
+    net_utils.load_network(network,
+                           cfg.trained_model_dir,
+                           resume=cfg.resume,
+                           epoch=cfg.test.epoch)
+    network.eval()
+    
+    data_loader_train = make_data_loader(cfg, is_train=True)
+    data_loader_test = make_data_loader(cfg, is_train=False)
+    
+    outputs_train = get_view_selection(data_loader_train, network)
+    outputs_test = get_view_selection(data_loader_test, network)
     outputs = {**outputs_train, **outputs_test}
     
     # dump outputs to json file
-    mcp_output_file = os.path.join(cfg.result_dir, f'mcp_outputs.json')
-    import json
-    with open(mcp_output_file, 'w') as f:
+    view_selection_file = os.path.join(cfg.result_dir, f'view_selection.json')
+    with open(view_selection_file, 'w') as f:
         json.dump(outputs, f)
+        
+def get_view_selection(data_loader, network):
+    import tqdm
+    import torch
+
+    outputs = {}
+    for batch in tqdm.tqdm(data_loader):
+        for k in batch:
+            if k != 'meta':
+                batch[k] = batch[k].cuda()
+        with torch.no_grad():
+            torch.cuda.synchronize()
+            output = network.forward_view_selection(batch)
+            torch.cuda.synchronize()
+        outputs.update(output)
+    return outputs
 
 def run_evaluate():
     from lib.datasets import make_data_loader
@@ -155,10 +112,8 @@ def run_evaluate():
         evaluator.evaluate(output, batch)
     evaluator.summarize()
     if len(net_time) > 1:
-        # print('net_time: ', np.mean(net_time[1:]))
         print('FPS: ', 1./np.mean(net_time[1:]))
     else:
-        # print('net_time: ', np.mean(net_time))
         print('FPS: ', 1./np.mean(net_time))
 
 

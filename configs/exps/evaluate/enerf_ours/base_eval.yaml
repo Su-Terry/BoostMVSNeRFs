@@ -1,0 +1,5 @@
+parent_cfg: configs/exps/pretrain/enerf_ours/dtu_pretrain.yaml
+
+enerf:
+  cas_config:
+    render_if: [False, True]

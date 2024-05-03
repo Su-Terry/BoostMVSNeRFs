@@ -49,11 +49,16 @@ class Evaluator:
             else:
                 h, w = batch['meta'][f'h_{i}'], batch['meta'][f'w_{i}']
             
-            pred_rgb_im = Image.fromarray((output[f'rgb_level{i}'][0].reshape(H, W, 3).detach().cpu().numpy()*255.).astype(np.uint8))
-            pred_rgb_im = pred_rgb_im.resize((w, h), Image.LANCZOS)
-            pred_rgb = np.array(pred_rgb_im).astype(np.float32) / 255.
+            pred_rgb_ims = []
+            for b in range(B):
+                pred_rgb_im = Image.fromarray((output[f'rgb_level{i}'][b].reshape(H, W, 3).detach().cpu().numpy()*255.).astype(np.uint8))
+                # save the image
+                img_path = f'tmp_{b}.png'
+                pred_rgb_im.save(img_path)
+                pred_rgb_im = pred_rgb_im.resize((w, h), Image.LANCZOS)
+                pred_rgb_ims.append(np.array(pred_rgb_im).astype(np.float32) / 255.)
             
-            pred_rgb = pred_rgb.reshape(1, h, w, 3)
+            pred_rgb = np.stack(pred_rgb_ims, axis=0)
             gt_rgb   = batch[f'rgb_{i}'].reshape(B, h, w, 3).detach().cpu().numpy()
 
             masks = (batch[f'msk_{i}'].reshape(B, h, w).cpu().numpy() >= 1).astype(np.uint8)

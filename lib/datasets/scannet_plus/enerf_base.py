@@ -4,15 +4,9 @@ from glob import glob
 from lib.utils.data_utils import load_K_Rt_from_P, read_cam_file
 from lib.config import cfg
 import imageio
-import tqdm
 from multiprocessing import Pool
-import copy
 import cv2
-import random
 from lib.config import cfg
-from lib.utils import data_utils
-from PIL import Image
-import torch
 from lib.datasets import enerf_utils
 
 class Dataset:
@@ -62,15 +56,12 @@ class Dataset:
             
             poses = []
             for pose_file in pose_paths:
-                with open(pose_file, 'r') as f:
-                    lines = f.readlines()
-                    pose = np.loadtxt(pose_file).astype(np.float32)
-                    poses.append(pose)
+                pose = np.loadtxt(pose_file).astype(np.float32)
+                poses.append(pose)
             poses = np.stack(poses)
             
             c2ws = np.eye(4)[None].repeat(len(poses), 0)
             c2ws = poses
-            # c2ws[:, :3, 0], c2ws[:, :3, 1], c2ws[:, :3, 2], c2ws[:, :3, 3] = poses[:, :3, 1], poses[:, :3, 0], -poses[:, :3, 2], poses[:, :3, 3]
             
             ixt_root = os.path.join(self.data_root, scene, 'exported', 'intrinsic')
             ixt_file = os.path.join(ixt_root, 'intrinsic_color.txt')
@@ -89,8 +80,8 @@ class Dataset:
             scene_info['scene_name'] = scene
             self.scene_infos[scene] = scene_info
             
-            train_file = f"data/scannet/{scene}/train.txt"
-            test_file = f"data/scannet/{scene}/test.txt"
+            train_file = f"data/scannet_plus/{scene}/train.txt"
+            test_file = f"data/scannet_plus/{scene}/test.txt"
             
             if os.path.exists(train_file):
                 train_ids = np.loadtxt(train_file, dtype="U")
@@ -129,6 +120,9 @@ class Dataset:
         ret = {'src_inps': src_inps.transpose(0, 3, 1, 2),
                'src_exts': src_exts,
                'src_ixts': src_ixts}
+        ret.update({'all_src_inps': src_inps.transpose(0, 3, 1, 2),
+               'all_src_exts': src_exts,
+               'all_src_ixts': src_ixts})
         ret.update({'tar_ext': tar_ext,
                     'tar_ixt': tar_ixt})
         if self.split != 'train':

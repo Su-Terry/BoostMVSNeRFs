@@ -166,12 +166,12 @@ class Network(network.Network):
         all_ret = {k: torch.cat(all_ret[k], dim=1) for k in all_ret}
         return all_ret
     
-    def merge_mlp_outputs(self, outputs, batch, K):
+    def merge_mlp_outputs(self, outputs, K):
         net_outputs = torch.stack([outputs[f'net_output_view{i}'] for i in range(K)], dim=1)
         masks = torch.stack([outputs[f'mask_view{i}'] for i in range(K)], dim=1)
         z_vals = torch.stack([outputs[f'z_vals_view{i}'] for i in range(K)], dim=1)
         
-        masks_sum = masks.sum(1)
+        masks_sum = masks.unsqueeze(1).sum(2)
         masks = torch.where(masks_sum > 0, masks / masks_sum, 1 / K)
                     
         volume_render_outputs = utils.raw2outputs_blend(net_outputs, masks, z_vals, cfg.enerf.white_bkgd)
@@ -231,7 +231,7 @@ class Network(network.Network):
             
             if not cfg.enerf.cas_config.render_if[i]:
                 continue
-            volume_render_level_ret = self.merge_mlp_outputs(mlp_level_ret, batch, K)
+            volume_render_level_ret = self.merge_mlp_outputs(mlp_level_ret, K)
             
             if cfg.enerf.cas_config.depth_inv[i]:
                 volume_render_level_ret.update({'depth_mvs': 1./depth[0]})

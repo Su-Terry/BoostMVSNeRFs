@@ -61,7 +61,7 @@ test_dataset:
     input_ratio: 1.
 
 train:
-    batch_size: 1
+    batch_size: 4
     lr: 5e-4
     weight_decay: 0.
     epoch: 300
@@ -83,9 +83,6 @@ test:
     sampler_meta:
         input_views_num: [6] 
         input_views_prob: [1.]
-
-preprocess:
-    batch_size: 256
 
 ep_iter: 1000
 save_ep: 5

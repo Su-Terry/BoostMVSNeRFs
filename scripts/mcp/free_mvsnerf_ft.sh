@@ -1,1 +1,0 @@
-python run.py --type mcp --cfg_file configs/mvsnerf_ours/free_eval.yaml

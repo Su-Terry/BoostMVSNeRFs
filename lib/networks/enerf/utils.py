@@ -400,7 +400,7 @@ def build_rays(depth, std, batch, training, near_far, level, up_scale=2.):
         # std = F.interpolate(std[:, None], scale_factor=up_scale, mode='nearest')[:, 0]
         # near_far = F.interpolate(near_far, scale_factor=up_scale, mode='nearest')
 
-    rays = batch[f'rays_{level}']
+    # rays = batch[f'rays_{level}']
     if cfg.enerf.cas_config.depth_inv[level]:
         rays_near_far = torch.stack([depth+std, depth-std], dim=-1)
         mask = rays_near_far[..., 0] > near_far[:, 0]
@@ -637,25 +637,25 @@ def raw2outputs(raw, z_vals, white_bkgd=False):
     return {'rgb': rgb_map, 'depth': depth_map, 'weights': weights}
 
 def raw2outputs_blend(raws, masks, z_vals, white_bkgd=False):
-    B, N_CV, N_rays, N_samples = raws.shape[:4]
-    masks = masks.view(B, N_CV, N_rays, N_samples)
+    B, K, N_rays, N_samples = raws.shape[:4]
+    masks = masks.view(B, K, N_rays, N_samples)
     raw2alpha = lambda raw: 1.-torch.exp(-raw)
-    alpha_all = raw2alpha(raws[...,3])  # [B, N_CV, N_rays, N_samples]
+    alpha_all = raw2alpha(raws[...,3])  # [B, K, N_rays, N_samples]
     alphas = torch.sum(alpha_all * masks, dim=1) # [B, N_rays, N_samples]
     
     rgb_all = raws[..., :3]
-    T_all = torch.cumprod(torch.cat([torch.ones_like(alpha_all[..., 0:1]), 1-alpha_all], dim=-1), dim=-1)[..., :-1]
-    T_full = torch.cumprod(torch.cat([torch.ones_like(alphas[..., 0:1]), 1-alphas], dim=-1), dim=-1)[..., :-1]
+    # T_all = torch.cumprod(torch.cat([torch.ones_like(alpha_all[..., 0:1]), 1-alpha_all], dim=-1), dim=-1)[..., :-1]
+    T_full = torch.cumprod(torch.cat([torch.ones_like(alphas[..., 0:1]), 1-alphas], dim=-1), dim=-1)[..., :-1] # [B, N_rays, N_samples]
     
-    weights_all = alpha_all * T_all
-    weights_full = alphas * T_full
+    # weights_all = alpha_all * T_all # [B, K, N_rays, N_samples]
+    weights_full = alphas * T_full # [B, N_rays, N_samples]
     
-    rgb_map_all = torch.sum(weights_all[...,None] * rgb_all, -2)  # [B, N_CV, N_rays, 3]
-    rgb_map_full = torch.sum((T_full*alpha_all*masks)[...,None] * rgb_all, -2)  # [B, N_CV, N_rays, 3]
+    # rgb_map_all = torch.sum(weights_all[...,None] * rgb_all, -2)  # [B, K, N_rays, 3]
+    rgb_map_full = torch.sum((T_full.unsqueeze(1).repeat(1, K, 1, 1)*alpha_all*masks)[...,None] * rgb_all, -2)  # [B, K, N_rays, 3]
     rgb_map_full = torch.sum(rgb_map_full, dim=1) # [B, N_rays, 3]
     
-    depth_map_all = torch.sum(weights_all*z_vals.detach(), -1)
-    depth_map_full = torch.sum(weights_full*z_vals.detach(), -1)
+    # depth_map_all = torch.sum(weights_all*z_vals.detach(), -1)
+    depth_map_full = torch.sum(weights_full.unsqueeze(1).repeat(1, K, 1, 1)*z_vals.detach(), -1)
     
     if white_bkgd:
         raise NotImplementedError

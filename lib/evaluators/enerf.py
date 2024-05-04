@@ -47,14 +47,11 @@ class Evaluator:
             if batch['meta']['split'] == 'train':
                 h, w = H, W
             else:
-                h, w = batch['meta'][f'h_{i}'], batch['meta'][f'w_{i}']
+                h, w = batch['meta'][f'h_{i}'][0], batch['meta'][f'w_{i}'][0]
             
             pred_rgb_ims = []
             for b in range(B):
                 pred_rgb_im = Image.fromarray((output[f'rgb_level{i}'][b].reshape(H, W, 3).detach().cpu().numpy()*255.).astype(np.uint8))
-                # save the image
-                img_path = f'tmp_{b}.png'
-                pred_rgb_im.save(img_path)
                 pred_rgb_im = pred_rgb_im.resize((w, h), Image.LANCZOS)
                 pred_rgb_ims.append(np.array(pred_rgb_im).astype(np.float32) / 255.)
             

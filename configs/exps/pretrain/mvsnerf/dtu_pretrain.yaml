@@ -1,0 +1,6 @@
+parent_cfg: configs/exps/pretrain/enerf/dtu_pretrain.yaml
+gpus: [0]
+exp_name: mvsnerf
+
+# module
+network_module: lib.networks.mvsnerf.network

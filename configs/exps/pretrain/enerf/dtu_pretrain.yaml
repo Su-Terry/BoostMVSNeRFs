@@ -59,7 +59,7 @@ test_dataset:
     input_ratio: 1.
 
 train:
-    batch_size: 1
+    batch_size: 4
     lr: 5e-4
     weight_decay: 0.
     epoch: 300
@@ -75,7 +75,7 @@ train:
     num_workers: 4
 
 test:
-    batch_size: 1
+    batch_size: 4
     collator: 'enerf' 
     batch_sampler: 'enerf'
     sampler_meta:

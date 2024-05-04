@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
-import numpy as np
 from lib.networks.enerf import utils
 from lib.config import cfg
 from lib.networks.enerf import network
@@ -178,7 +177,7 @@ class Network(network.Network):
         return volume_render_outputs
 
     def forward(self, batch):
-        B, N, C = batch['all_src_inps'].shape[:3]
+        B, N = batch['all_src_inps'].shape[:2]
         I = cfg.enerf.cost_volume_input_views
         K = cfg.enerf.cas_config.k_best
         selected_views = torch.combinations(torch.arange(N), I).to(batch['all_src_inps'].device) # (N, 3)

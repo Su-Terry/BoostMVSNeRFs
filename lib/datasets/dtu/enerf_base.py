@@ -1,13 +1,8 @@
 import numpy as np
 import os
-from glob import glob
-from lib.utils.data_utils import load_K_Rt_from_P, read_cam_file
 from lib.datasets import enerf_utils
 from lib.config import cfg
 import imageio
-import tqdm
-from multiprocessing import Pool
-import copy
 import cv2
 import random
 from lib.config import cfg
@@ -100,6 +95,9 @@ class Dataset:
         ret = {'src_inps': src_inps,
                'src_exts': src_exts,
                'src_ixts': src_ixts}
+        ret.update({'all_src_inps': src_inps.transpose(0, 3, 1, 2),
+               'all_src_exts': src_exts,
+               'all_src_ixts': src_ixts})
         ret.update({'tar_ext': tar_ext,
                     'tar_ixt': tar_ixt})
         if self.split != 'train':

@@ -2,6 +2,11 @@ parent_cfg: configs/exps/evaluate/enerf_ours/base_eval.yaml
 
 dataset_module: lib.datasets.free.enerf_base
 
+train:
+    batch_size: 1
+test:
+    batch_size: 1
+
 train_dataset:
     data_root: 'free_dataset' #
     split: 'train'

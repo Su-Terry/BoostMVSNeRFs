@@ -1,10 +1,7 @@
 import numpy as np
 import os
-from glob import glob
-from lib.utils.data_utils import load_K_Rt_from_P, read_cam_file
 from lib.config import cfg
 import imageio
-from multiprocessing import Pool
 import cv2
 from lib.config import cfg
 from lib.datasets import enerf_utils
@@ -33,9 +30,6 @@ class Dataset:
         self.scene_infos = {}
         self.metas = []
         
-        def get_key(item):
-            return int(os.path.basename(item).split('.')[0])
-        
         def filter_valid_id(scene, id_list):
             empty_lst=[]
             for id in id_list:
@@ -49,10 +43,8 @@ class Dataset:
             colordir = os.path.join(self.data_root, scene, "exported/color")
             image_paths = [f for f in os.listdir(colordir) if os.path.isfile(os.path.join(colordir, f))]
             image_paths = [os.path.join(self.data_root, scene, "exported/color/{}.jpg".format(i)) for i in range(len(image_paths))]
-            # pose_root = os.path.join(self.data_root, scene, "exported/pose")
             pose_paths = [os.path.join(self.data_root, scene, "exported/pose/{}.txt".format(i)) for i in range(len(image_paths))]
             self.all_id_list = filter_valid_id(scene, list(range(len(image_paths))))
-            # print(all_id_list)
             
             poses = []
             for pose_file in pose_paths:
@@ -69,10 +61,8 @@ class Dataset:
             ixts = np.tile(ixt, (len(c2ws), 1, 1))
             # ixts[:, 0, 2], ixts[:, 1, 2] = ixts[:, 0, 2] / 2, ixts[:, 1, 2] / 2
 
-            # depth_ranges = pose_bounds[:, -2:]
-            depth_ranges = np.ones((len(image_paths), 2))
-            depth_ranges[:, 0] *= 0.25
-            depth_ranges[:, 1] *= 6
+            # Poses bounds
+            depth_ranges = np.full((len(image_paths), 2), [0.25, 6]).astype(np.float32)
             
             image_names = [os.path.basename(image_path) for image_path in image_paths]
             
@@ -102,7 +92,7 @@ class Dataset:
                 argsorts = distance.argsort()
                 argsorts = argsorts[1:] if i in train_ids else argsorts
                 if self.split == 'train':
-                    src_views = [train_ids[i] for i in argsorts[:cfg.enerf.train_input_views[1]+1]]
+                    src_views = [train_ids[i] for i in argsorts[:cfg.enerf.train_input_views[1]]]
                 else:
                     src_views = [train_ids[i] for i in argsorts[:cfg.enerf.test_input_views]]
                 

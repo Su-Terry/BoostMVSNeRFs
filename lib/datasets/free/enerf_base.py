@@ -1,10 +1,7 @@
 import numpy as np
 import os
-from glob import glob
-from lib.utils.data_utils import load_K_Rt_from_P, read_cam_file
 from lib.config import cfg
 import imageio
-from multiprocessing import Pool
 import cv2
 import random
 from lib.config import cfg
@@ -59,7 +56,7 @@ class Dataset:
                 argsorts = distance.argsort()
                 argsorts = argsorts[1:] if i in train_ids else argsorts
                 if self.split == 'train':
-                    src_views = [train_ids[i] for i in argsorts[:cfg.enerf.train_input_views[1]+1]]
+                    src_views = [train_ids[i] for i in argsorts[:cfg.enerf.train_input_views[1]]]
                 else:
                     src_views = [train_ids[i] for i in argsorts[:cfg.enerf.test_input_views]]
                 self.metas += [(scene, i, src_views)]
@@ -119,7 +116,12 @@ class Dataset:
         return np.stack(imgs), np.stack(exts), np.stack(ixts)
 
     def read_tar(self, scene, view_idx):
-        img, orig_size = self.read_image(scene, view_idx, is_gt=True)
+        if self.split == 'train':
+            # Fixed image size
+            img, orig_size = self.read_image(scene, view_idx, is_gt=False)
+        else:
+            # Original image size for evaluation
+            img, orig_size = self.read_image(scene, view_idx, is_gt=True)
         img = (img/255.).astype(np.float32)
         ixt, ext, _ = self.read_cam(scene, view_idx, orig_size)
         mask = np.ones_like(img[..., 0]).astype(np.uint8)

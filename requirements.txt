@@ -13,3 +13,4 @@ pyopengl
 imgui
 termcolor
 trimesh
+inplace-abn

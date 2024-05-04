@@ -5,7 +5,7 @@ exp_name: enerf_ours
 # module
 train_dataset_module: lib.datasets.dtu.base
 test_dataset_module: lib.datasets.dtu.base
-network_module: lib.networks.boostmvsnerfs.network
+network_module: lib.networks.boost_enerf.network
 loss_module: lib.train.losses.enerf
 evaluator_module: lib.evaluators.enerf
 visualizer_module: lib.visualizers.enerf
@@ -77,7 +77,7 @@ train:
     num_workers: 4
 
 test:
-    batch_size: 1
+    batch_size: 4
     collator: 'enerf' 
     batch_sampler: 'enerf'
     sampler_meta:

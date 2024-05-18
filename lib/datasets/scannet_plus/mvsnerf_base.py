@@ -65,7 +65,7 @@ class Dataset:
             ixt_root = os.path.join(self.data_root, scene, 'exported', 'intrinsic')
             ixt_file = os.path.join(ixt_root, 'intrinsic_color.txt')
             ixt = np.loadtxt(ixt_file).astype(np.float32)[:3,:3]
-            print(ixt[0, 2], ixt[0, 1])
+            print(ixt[0, 2], ixt[1, 2])
 
             focal = [ixt[0, 0]* self.input_h_w[0]/ixt[0, 2], ixt[1, 1]* self.input_h_w[1]/ixt[1, 2]]
             directions = self.get_ray_directions(self.input_h_w[1], self.input_h_w[0], focal)
@@ -95,9 +95,6 @@ class Dataset:
                     render_ids = train_ids
             else:
                 raise f"Train file, {train_file}, not exists."
-            
-            if self.split == 'train':
-                render_ids = train_ids
 
             c2ws = c2ws[train_ids]
                         

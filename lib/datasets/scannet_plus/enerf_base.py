@@ -158,6 +158,8 @@ class Dataset:
         ixt = scene['ixts'][view_idx].copy()
         ixt[0] *= self.input_h_w[1] / orig_size[0]
         ixt[1] *= self.input_h_w[0] / orig_size[1]
+        ixt[0, 2] = self.input_h_w[1] / 2
+        ixt[1, 2] = self.input_h_w[0] / 2
         return ixt, np.linalg.inv(ext), 1
 
     def read_image(self, scene, view_idx):

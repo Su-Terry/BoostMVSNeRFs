@@ -3,7 +3,6 @@ import os
 import imageio
 import cv2
 import torch
-from PIL import Image
 from lib.config import cfg
 from lib.datasets import enerf_utils
 
@@ -12,11 +11,7 @@ class Dataset:
         super(Dataset, self).__init__()
         self.data_root = os.path.join(cfg.workspace, kwargs['data_root'])
         self.split = kwargs['split']
-        self.input_h_w_ori = kwargs['input_h_w']
-        im = Image.new('RGB', self.input_h_w_ori)
-        im = np.array(im)
-        im = im[32:-32, 32:-32]
-        self.input_h_w = im.shape
+        self.input_h_w = kwargs['input_h_w']
         
         if 'scene' in kwargs:
             self.scenes = [kwargs['scene']]
@@ -26,52 +21,30 @@ class Dataset:
 
     def build_metas(self):
         if len(self.scenes) == 0:
-            # scenes = ['scene0000_01', 'scene0079_00', 
-            #           'scene0158_00', 'scene0316_00',
-            #           'scene0521_00', 'scene0553_00',
-            #           'scene0616_00', 'scene0653_00']
-            scenes = ['scene0000_01']
+            scenes = ['scene0000_01', 'scene0079_00', 
+                      'scene0158_00', 'scene0316_00',
+                      'scene0521_00', 'scene0553_00',
+                      'scene0616_00', 'scene0653_00']
         else:
             scenes = self.scenes
         self.scene_infos = {}
         self.metas = []
-        
-        def filter_valid_id(scene, id_list):
-            empty_lst=[]
-            for id in id_list:
-                c2w = np.loadtxt(os.path.join(self.data_root, scene, "exported/pose", "{}.txt".format(id))).astype(np.float32)
-                # filter nan, -inf, inf
-                if np.max(np.abs(c2w)) < 30:
-                    empty_lst.append(id)
-            return empty_lst
 
         for scene in scenes:
             colordir = os.path.join(self.data_root, scene, "exported/color")
             image_paths = [f for f in os.listdir(colordir) if os.path.isfile(os.path.join(colordir, f))]
             image_paths = [os.path.join(self.data_root, scene, "exported/color/{}.jpg".format(i)) for i in range(len(image_paths))]
             pose_paths = [os.path.join(self.data_root, scene, "exported/pose/{}.txt".format(i)) for i in range(len(image_paths))]
-            self.all_id_list = filter_valid_id(scene, list(range(len(image_paths))))
             
-            poses = []
+            c2ws = []
             for pose_file in pose_paths:
                 pose = np.loadtxt(pose_file).astype(np.float32)
-                poses.append(pose)
-            poses = np.stack(poses)
-            
-            c2ws = np.eye(4)[None].repeat(len(poses), 0)
-            c2ws = poses
-            # c2ws[:, :3, 0], c2ws[:, :3, 1], c2ws[:, :3, 2], c2ws[:, :3, 3] = poses[:, :3, 1], poses[:, :3, 0], -poses[:, :3, 2], poses[:, :3, 3]
+                c2ws.append(pose)
+            c2ws = np.stack(c2ws)
             
             ixt_root = os.path.join(self.data_root, scene, 'exported', 'intrinsic')
             ixt_file = os.path.join(ixt_root, 'intrinsic_color.txt')
             ixt = np.loadtxt(ixt_file).astype(np.float32)[:3,:3]
-            print(ixt[0, 2], ixt[1, 2])
-
-            focal = [ixt[0, 0]* self.input_h_w[0]/ixt[0, 2], ixt[1, 1]* self.input_h_w[1]/ixt[1, 2]]
-            directions = self.get_ray_directions(self.input_h_w[1], self.input_h_w[0], focal)
-            ixt = np.array([[focal[0], 0, self.input_h_w[0]/2], [0, focal[1], self.input_h_w[1]/2], [0, 0, 1]])
-
-            # ixt[:2, :2] *= 2
             ixts = np.tile(ixt, (len(c2ws), 1, 1))
 
             # Poses bounds
@@ -105,18 +78,18 @@ class Dataset:
                 argsorts = distance.argsort()
                 argsorts = argsorts[1:] if i in train_ids else argsorts
                 if self.split == 'train':
-                    src_views = [train_ids[i] for i in argsorts[:cfg.enerf.train_input_views[1]+1]]
+                    src_views = [train_ids[i] for i in argsorts[:cfg.enerf.train_input_views[1]]]
                 else:
                     src_views = [train_ids[i] for i in argsorts[:cfg.enerf.test_input_views]]
                 
-                self.metas += [(scene, i, src_views, directions)]
+                self.metas += [(scene, i, src_views)]
 
     def __getitem__(self, index_meta):
         index, input_views_num = index_meta
-        scene, tar_view, src_views, directions = self.metas[index]
+        scene, tar_view, src_views = self.metas[index]
                 
         scene_info = self.scene_infos[scene]
-        tar_img, tar_mask, tar_ext, tar_ixt = self.read_tar(scene_info, tar_view)
+        tar_img, tar_mask, tar_ext, tar_ixt, tar_direction = self.read_tar(scene_info, tar_view)
                 
         src_inps, src_exts, src_ixts = self.read_src(scene_info, src_views)
 
@@ -144,7 +117,7 @@ class Dataset:
         for i in range(cfg.enerf.cas_config.num):
             _, rgb, msk = enerf_utils.build_rays(tar_img, tar_ext, tar_ixt, tar_mask, i, self.split)
             
-            rays_o, rays_d = self.get_rays(directions, torch.from_numpy(np.linalg.inv(tar_ext)[:3, :]))
+            rays_o, rays_d = self.get_rays(tar_direction, torch.from_numpy(np.linalg.inv(tar_ext)[:3, :]))
             rays = torch.cat([rays_o, rays_d, 0.25*torch.ones_like(rays_o[:, :1]), 6*torch.ones_like(rays_o[:, :1])], 1)
 
             ret.update({f'rays_{i}': rays, f'rgb_{i}': rgb.astype(np.float32), f'msk_{i}': msk})
@@ -208,22 +181,23 @@ class Dataset:
         img = (img/255.).astype(np.float32)
         ixt, ext, _ = self.read_cam(scene, view_idx, orig_size)
         mask = np.ones_like(img[..., 0]).astype(np.uint8)
-        return img, mask, ext, ixt
+        directions = self.get_ray_directions(self.input_h_w[0], self.input_h_w[1], [ixt[0, 0], ixt[1, 1]])
+        return img, mask, ext, ixt, directions
 
     def read_cam(self, scene, view_idx, orig_size):
         ext = scene['c2ws'][view_idx].astype(np.float32)
         ixt = scene['ixts'][view_idx].copy()
-        # ixt[0] *= self.input_h_w[1] / orig_size[0]
-        # ixt[1] *= self.input_h_w[0] / orig_size[1]
+        ixt[0] *= self.input_h_w[1] / orig_size[0] # ixt[0, 2]
+        ixt[1] *= self.input_h_w[0] / orig_size[1] # ixt[1, 2]
+        ixt[0, 2] = self.input_h_w[1] / 2
+        ixt[1, 2] = self.input_h_w[0] / 2
         return ixt, np.linalg.inv(ext), 1
 
     def read_image(self, scene, view_idx):
         image_path = os.path.join(self.data_root, scene['scene_name'], 'exported', 'color', scene['image_names'][view_idx])
         img = (np.array(imageio.imread(image_path))).astype(np.float32)
         orig_size = img.shape[:2][::-1]
-        img = cv2.resize(img, self.input_h_w_ori[::-1], interpolation=cv2.INTER_AREA)
-        img = np.array(img)
-        img = img[32:-32, 32:-32]
+        img = cv2.resize(img, self.input_h_w[::-1], interpolation=cv2.INTER_AREA)
         return np.array(img), orig_size
 
     def __len__(self):

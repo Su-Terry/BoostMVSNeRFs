@@ -1,5 +1,4 @@
 import torch
-import torch.nn as nn
 from torch.nn import functional as F
 from lib.networks.enerf import utils
 from lib.config import cfg

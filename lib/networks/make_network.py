@@ -1,4 +1,3 @@
-import os
 import imp
 
 def make_network(cfg, preprocess=False):

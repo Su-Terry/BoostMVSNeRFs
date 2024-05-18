@@ -2,10 +2,10 @@ from lib.config import cfg
 from lib.networks.enerf.utils import *
 import os
 import torch
-torch.autograd.set_detect_anomaly(True)
 from lib.networks.mvsnerf import network
 from lib.networks.mvsnerf.utils import get_ndc_coordinate
 import json
+import time
 
 
 class Network(network.Network):

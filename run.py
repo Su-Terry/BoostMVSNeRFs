@@ -54,12 +54,15 @@ def run_preprocess():
     data_loader_train = make_data_loader(cfg, is_train=True)
     data_loader_test = make_data_loader(cfg, is_train=False)
     
+    print('Preprocessing train set...')
     outputs_train = get_view_selection(data_loader_train, network)
+    print('Preprocessing test set...')
     outputs_test = get_view_selection(data_loader_test, network)
     outputs = {**outputs_train, **outputs_test}
     
     # dump outputs to json file
     view_selection_file = os.path.join(cfg.result_dir, f'view_selection.json')
+    os.makedirs(cfg.result_dir, exist_ok=True)
     with open(view_selection_file, 'w') as f:
         json.dump(outputs, f)
         

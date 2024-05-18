@@ -1,6 +1,4 @@
-parent_cfg: configs/exps/evaluate/enerf/base_eval.yaml
-save_tag: scannet_plus
-
+parent_cfg: configs/exps/evaluate/mvsnerf_ours/base_eval.yaml
 save_tag: scannet_plus
 
 dataset_module: lib.datasets.scannet_plus.mvsnerf_base

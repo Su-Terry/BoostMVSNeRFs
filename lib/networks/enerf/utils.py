@@ -490,7 +490,7 @@ def get_vox_feat(ndc_xyz, feature_volume):
 def get_ndc_coords(world_xyz, src_ext, src_ixt, inv_scale):
     B, N_rays, N_samples = world_xyz.shape[:3]
     
-    world_xyz = world_xyz.view(-1, 3)
+    world_xyz = world_xyz.reshape(B, -1, 3)
     src_ext = src_ext.view(B, 4, 4)
     src_ixt = src_ixt.view(B, 3, 3)
     

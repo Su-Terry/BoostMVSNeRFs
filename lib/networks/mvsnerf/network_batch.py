@@ -1,8 +1,5 @@
 from lib.config import cfg
 from lib.networks.enerf.utils import *
-from itertools import combinations
-import os
-import numpy as np
 
 import torch
 torch.autograd.set_detect_anomaly(True)
@@ -966,11 +963,11 @@ class Network(nn.Module):
             pts = embed_fn(pts)
 
         if alpha_feat is not None:
-            pts = torch.cat((pts,alpha_feat), dim=-1)
-
+            pts = torch.cat((pts, alpha_feat), dim=-1)
+            
         if viewdirs is not None:
-            if viewdirs.dim()!=3:
-                viewdirs = viewdirs[:, None].expand(-1,pts.shape[1],-1)
+            if viewdirs.dim() != 4:
+                viewdirs = viewdirs[:, :, None].expand(-1, -1, pts.shape[2], -1)
 
             if embeddirs_fn is not None:
                 viewdirs = embeddirs_fn(viewdirs)
@@ -978,25 +975,19 @@ class Network(nn.Module):
 
         return pts
     
-    def rendering(self, batch, rays_pts, rays_ndc, depth_candidates,rays_o, rays_dir, volume_feature):
+    def rendering(self, batch, rays_pts, rays_ndc, depth_candidates, rays_o, rays_dir, volume_feature):
         cos_angle = torch.norm(rays_dir, dim=-1)
-
-        angle = gen_dir_feature(batch['src_exts'][0][0], rays_dir/cos_angle.unsqueeze(-1))
-
+        angle = gen_dir_feature(batch['src_exts'][:, 0], rays_dir/cos_angle.unsqueeze(-1))
         del cos_angle
 
-        # print(angle.min(), angle.max())
-        pose_ref = {'w2cs': batch['src_exts'][0], 'intrinsics': batch['src_ixts'][0]}
+        pose_ref = {'w2cs': batch['src_exts'], 'intrinsics': batch['src_ixts']}
         
         rgbs = unpreprocess(batch['src_inps'], render_scale=cfg.enerf.cas_config.render_scale[0])
-        # rgbs = batch['src_inps']
-        # print(rgbs.min(), rgbs.max())
-        input_feat  = gen_pts_feats(rgbs, volume_feature, rays_pts, pose_ref, rays_ndc, 20, None)
+        input_feat = gen_pts_feats(rgbs, volume_feature, rays_pts, pose_ref, rays_ndc, 20, None)
 
         # embed_fn, _ = get_embedder(10, 0, input_dims=3)
         embeddirs_fn = None
-        # print(rays_ndc.shape, angle.shape, input_feat.shape)
-        raw = self.run_network_mvs(rays_ndc[0], angle[0], input_feat, self.embed_fn, embeddirs_fn)
+        raw = self.run_network_mvs(rays_ndc, angle, input_feat, self.embed_fn, embeddirs_fn)
         
         return raw
 
@@ -1020,8 +1011,8 @@ class Network(nn.Module):
             # uvd_i[..., 0], uvd_i[..., 1] = (uvd_i[..., 0]) / (W-1), (uvd_i[..., 1]) / (H-1)
 
             inv_scale = torch.tensor([W-1, H-1], dtype=torch.float32, device=world_xyz.device).unsqueeze(0).expand(B, -1)
-            uvd_i = get_ndc_coordinate(batch['src_exts'][0, 0], batch['src_ixts'][0, 0], world_xyz_i[0], inv_scale[0], near=batch['near_far'].min(), far=batch['near_far'].max(), pad=24)[None]
-            raw = self.rendering(batch, world_xyz_i[0], uvd_i, z_vals, rays_i[..., :3], rays_i[..., 3:6], feat_volume)
+            uvd_i = get_ndc_coordinate(batch['src_exts'][:, 0], batch['src_ixts'][:, 0], world_xyz_i, inv_scale, near=batch['near_far'].min(), far=batch['near_far'].max(), pad=24)
+            raw = self.rendering(batch, world_xyz_i, uvd_i, z_vals, rays_i[..., :3], rays_i[..., 3:6], feat_volume)
 
             net_output_i = nerf_model(raw)
             net_output_i = net_output_i.reshape(B, -1, N_samples, net_output_i.shape[-1])
@@ -1111,7 +1102,7 @@ class Network(nn.Module):
         proj_mats = self.get_proj_mats(batch).to(device)
         volume_feat = self.build_volume_costvar_img(batch['src_inps'], feats[:, views], proj_mats, depth_values, pad=24)
         volume_feat = self.cost_reg_2(volume_feat) # (B, 1, D, h, w)
-        volume_feat = volume_feat.reshape(1,-1,*volume_feat.shape[2:])
+        volume_feat = volume_feat.reshape(B,-1,*volume_feat.shape[2:])
 
         mlp_view_ret = self.batchify_rays_for_mlp(batch['rays_0'], level=0, batch=batch, im_feat=feats[:, views], feature_volume=volume_feat, nerf_model=self.nerf)
 

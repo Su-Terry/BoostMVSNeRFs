@@ -19,12 +19,12 @@ enerf:
         render_if: [True]
 
 train:
-    batch_size: 1
+    batch_size: 4
     sampler_meta:
         input_views_num: [5, 6, 7] 
         input_views_prob: [0.1, 0.8, 0.1]
 
 test:
-    batch_size: 1
+    batch_size: 4
     sampler_meta:
         input_views_num: [6]

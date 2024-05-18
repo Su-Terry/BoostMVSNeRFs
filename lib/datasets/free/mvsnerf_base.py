@@ -1,20 +1,12 @@
 import numpy as np
 import os
-from glob import glob
-from lib.utils.data_utils import load_K_Rt_from_P, read_cam_file
 from lib.config import cfg
 import imageio
-import tqdm
-from multiprocessing import Pool
-import copy
-import cv2
 import random
 from lib.config import cfg
-from lib.utils import data_utils
 from PIL import Image
 import torch
 from lib.datasets import enerf_utils
-from torchvision import transforms as T
 
 class Dataset:
     def __init__(self, **kwargs):
@@ -31,12 +23,10 @@ class Dataset:
     def build_metas(self):
         if len(self.scenes) == 0:
             scenes = ['grass', 'hydrant', 'lab', 'pillar', 'road', 'sky', 'stair']
-            # scenes = ['hydrant']
         else:
             scenes = self.scenes
         self.scene_infos = {}
         self.metas = []
-        # pairs = torch.load('data/mvsnerf/pairs.th')
         for scene in scenes:
 
             pose_bounds = np.load(os.path.join(self.data_root, scene, 'poses_bounds.npy')) # c2w, -u, r, -t
@@ -51,14 +41,10 @@ class Dataset:
             ixts = np.eye(3)[None].repeat(len(poses), 0)
             ixts[:, 0, 0], ixts[:, 1, 1] = poses[:, 2, 4], poses[:, 2, 4]
             ixts[:, 0, 2], ixts[:, 1, 2] = poses[:, 1, 4]/2., poses[:, 0, 4]/2.
-            # self.poses = np.concatenate([poses[..., 1:2], -poses[..., :1], poses[..., 2:4]], -1)
-            # self.poses = self.poses @ np.array([[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1]])
             ixts[:, :2] *= 0.5
 
-            # img_paths = sorted([item for item in os.listdir(os.path.join(self.data_root, scene, 'images_4')) if '.png' in item])
             img_paths = sorted([item for item in os.listdir(os.path.join(self.data_root, scene, 'images')) if '.png' in item or '.JPG' in item or '.jpg' in item])
             depth_ranges = pose_bounds[:, -2:]
-            bounds = depth_ranges
             scene_info = {'ixts': ixts.astype(np.float32), 'c2ws': c2ws.astype(np.float32), 'image_names': img_paths, 'depth_ranges': depth_ranges.astype(np.float32)}
             scene_info['scene_name'] = scene
             self.scene_infos[scene] = scene_info
@@ -80,28 +66,22 @@ class Dataset:
                     src_views = [train_ids[i] for i in argsorts[:cfg.enerf.train_input_views[1]]]
                 else:
                     src_views = [train_ids[i] for i in argsorts[:cfg.enerf.test_input_views]]
-                # print(argsorts)
                 self.metas += [(scene, i, src_views, depth_ranges[src_views], directions)]
 
     def __getitem__(self, index_meta):
         index, input_views_num = index_meta
         scene, tar_view, src_views, depth_ranges, directions = self.metas[index]
-        # if self.split == 'train':
-        #     if np.random.random() < 0.1:
-        #         src_views = src_views + [tar_view]
-        #     src_views = random.sample(src_views, input_views_num)
         scene_info = self.scene_infos[scene]
 
         tar_img, tar_mask, tar_ext, tar_ixt = self.read_tar(scene_info, tar_view)
         src_inps, src_exts, src_ixts = self.read_src(scene_info, src_views)
-        # print(src_inps.min(), src_inps.max(), tar_img.min(), tar_img.max())
 
-        # src_inps = self.src_transform(torch.from_numpy(src_inps.transpose(0, 3, 1, 2)))
-
-        ret = {'all_src_inps': src_inps.transpose(0, 3, 1, 2),
-        # ret = {'all_src_inps': src_inps,
+        ret = {'src_inps': src_inps.transpose(0, 3, 1, 2),
+                'src_exts': src_exts,
+                'src_ixts': src_ixts}
+        ret.update({'all_src_inps': src_inps.transpose(0, 3, 1, 2),
                'all_src_exts': src_exts,
-               'all_src_ixts': src_ixts}
+               'all_src_ixts': src_ixts})
         ret.update({'tar_ext': tar_ext,
                     'tar_ixt': tar_ixt})
         if self.split != 'train':
@@ -109,27 +89,16 @@ class Dataset:
                         'tar_mask': tar_mask})
 
         H, W = tar_img.shape[:2]
-        # depth_ranges = np.array(scene_info['depth_ranges'])
-        # print(depth_ranges)
-        # print(src_views[:3])
-        # near_far = np.array([depth_ranges[:3, 0].min()*0.8, depth_ranges[src_views[:3], 1].max()*1.2]).astype(np.float32)
-        # near_far = scene_info['depth_ranges'][tar_view]
-        # ret.update({'near_far': np.array(near_far).astype(np.float32)})
-        ret.update({'meta': {'scene': scene, 'tar_view': tar_view, 'frame_id': 0}})
+        ret.update({'meta': {'scene': scene, 'tar_view': tar_view, 'frame_id': 0, 'split': self.split}})
         ret.update({'depth_ranges': depth_ranges.astype(np.float32)})
 
         for i in range(cfg.enerf.cas_config.num):
-            # print(tar_img.max(), tar_img.min())
             _, rgb, msk = enerf_utils.build_rays(tar_img, tar_ext, tar_ixt, tar_mask, i, self.split)
-            # print('c2w', tar_ext[:3, :])
             rays_o, rays_d = self.get_rays(directions, torch.from_numpy(np.linalg.inv(tar_ext)[:3, :]))
             rays = torch.cat([rays_o, rays_d, depth_ranges.min() * torch.ones_like(rays_o[:, :1]) * 0.8, depth_ranges.max() * torch.ones_like(rays_o[:, :1]) * 1.2], 1)
-            # print("rays", tar_view, rays_o, rays_d)
             ret.update({f'rays_{i}': rays, f'rgb_{i}': rgb.astype(np.float32), f'msk_{i}': msk})
             # s = cfg.enerf.cas_config.volume_scale[i]
             ret['meta'].update({f'h_{i}': int(H), f'w_{i}': int(W)})
-        # ret[f'rgb_0'] = ret[f'rgb_1']
-        # ret[f'msk_0'] = ret[f'msk_1']
         return ret
     
     def get_rays(self, directions, c2w):
@@ -184,7 +153,12 @@ class Dataset:
         return np.stack(imgs), np.stack(exts), np.stack(ixts)
 
     def read_tar(self, scene, view_idx):
-        img, orig_size = self.read_image(scene, view_idx, True)
+        if self.split == 'train':
+            # Fixed image size
+            img, orig_size = self.read_image(scene, view_idx, is_gt=False)
+        else:
+            # Original image size for evaluation
+            img, orig_size = self.read_image(scene, view_idx, is_gt=True)
         img = (img/255.).astype(np.float32)
         ixt, ext, _ = self.read_cam(scene, view_idx, orig_size)
         mask = np.ones_like(img[..., 0]).astype(np.uint8)
@@ -206,7 +180,6 @@ class Dataset:
         if not is_gt:
             img = img.resize(self.input_h_w[::-1], Image.LANCZOS)
 
-        # img = cv2.resize(img, self.input_h_w[::-1], interpolation=cv2.INTER_LANCZOS4)
         return np.array(img), orig_size
 
     def __len__(self):

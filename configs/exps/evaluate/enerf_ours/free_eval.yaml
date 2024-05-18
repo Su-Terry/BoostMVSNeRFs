@@ -1,4 +1,5 @@
 parent_cfg: configs/exps/evaluate/enerf_ours/base_eval.yaml
+save_tag: free
 
 dataset_module: lib.datasets.free.enerf_base
 

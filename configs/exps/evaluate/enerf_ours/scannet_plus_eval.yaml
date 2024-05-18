@@ -1,4 +1,5 @@
 parent_cfg: configs/exps/evaluate/enerf_ours/base_eval.yaml
+save_tag: scannet_plus
 
 dataset_module: lib.datasets.scannet_plus.enerf_base
 

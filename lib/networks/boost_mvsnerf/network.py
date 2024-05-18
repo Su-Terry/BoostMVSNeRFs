@@ -19,6 +19,80 @@ class Network(network.Network):
                 raise "View selection file not found. Please run view selection first."
             with open(view_selection_file, 'r') as f:
                 self.view_selection_outputs = json.load(f)
+                
+    def calc_mask(self, src_views_id, batch):
+        batch['src_inps'] = batch['all_src_inps'][:, src_views_id]
+        batch['src_exts'] = batch['all_src_exts'][:, src_views_id]
+        batch['src_ixts'] = batch['all_src_ixts'][:, src_views_id]
+
+        ray_tar = batch['rays_0'][0]
+        world_xyz, z_vals = self.ray_marcher(ray_tar, 128)
+        N_samples = 128
+
+        B, S, _, H_O, W_O = batch['src_inps'].shape # B, S, C, H, W
+        H, W = int(H_O * cfg.enerf.cas_config.render_scale[0]), int(W_O * cfg.enerf.cas_config.render_scale[0])
+        inv_scale = torch.tensor([W-1, H-1], dtype=torch.float32, device=world_xyz.device)
+
+        mask = mask_viewport(world_xyz, batch['src_exts'], batch['src_ixts'], inv_scale)
+        mask = mask.reshape(B, -1, N_samples, 1) / N_samples
+        mask = mask.repeat(1, 1, 1, 4) # rgb + alpha
+        
+        mask = raw2outputs(mask, z_vals, cfg.enerf.white_bkgd)['rgb'].mean(-1)
+        mask_all = {
+            f'mask_level0': mask
+        }
+
+        return mask_all
+    
+    def search_k_best_views(self, masks, k, level):
+        results = []
+        prev_mask = torch.ones_like(masks[f'mask_level{level}_view0'])
+        H, W = masks[f'mask_level{level}_view0'].shape[-2:]
+        for _ in range(k):
+            max_update_ratio, best_mask_id = 0, None
+            for i in range(len(masks)):
+                if i in results:
+                    continue
+                mask = masks[f'mask_level{level}_view{i}']
+                update_ratio = (mask * prev_mask).sum() / (H*W)
+                if update_ratio > max_update_ratio:
+                    max_update_ratio = update_ratio
+                    best_mask_id = i
+                    
+            if best_mask_id is None:
+                break
+            
+            prev_mask = prev_mask * (1 - masks[f'mask_level{level}_view{best_mask_id}'])
+            results.append(best_mask_id)
+            
+        if results == []:
+            results.append(0)
+        
+        return results
+    
+    def forward_view_selection(self, batch):
+        N_views = batch['all_src_inps'].shape[1]
+        selected_views = torch.combinations(torch.arange(N_views), 3)
+        
+        # Obtain masks in parallel
+        # st = time.time()
+        src_masks_all = {}
+        for i, src_views_id in enumerate(selected_views):
+            src_masks = self.calc_mask(src_views_id, batch)
+            src_masks_all.update({key+f'_view{i}': src_masks[key] for key in src_masks})
+        # print(f'mask time: {time.time()-st}')
+        
+        k_best = {}
+        for i in range(cfg.enerf.cas_config.num):
+            if not cfg.enerf.cas_config.render_if[i]:
+                continue
+            src_masks_leveli = {key: src_masks_all[key] for key in src_masks_all if key.startswith(f'mask_level{i}')}
+            k_best_i = self.search_k_best_views(src_masks_leveli, cfg.enerf.cas_config.k_best, level=i)
+            k_best_i = torch.tensor(k_best_i, dtype=torch.long)
+            key = f'{batch["meta"]["scene"][0]}_{batch["meta"]["tar_view"][0]}'
+            val = k_best_i.detach().cpu().numpy().tolist()
+            k_best.update({key: val})
+        return k_best
 
     def render_rays(self, rays, **kwargs):
         level, batch, im_feat, feat_volume, nerf_model = kwargs['level'], kwargs['batch'], kwargs['im_feat'], kwargs['feature_volume'], kwargs['nerf_model']
@@ -118,28 +192,19 @@ class Network(network.Network):
             batch['src_exts'] = batch['all_src_exts'][full_indices[:, :, 0], full_indices[:, :, 1]]
             batch['src_ixts'] = batch['all_src_ixts'][full_indices[:, :, 0], full_indices[:, :, 1]]
             proj_mats = self.get_proj_mats(batch).to(batch['all_src_inps'].device)
-            volume_feat, _ = self.build_volume_costvar_img(batch['src_inps'], feats[full_indices[:, :, 0], full_indices[:, :, 1]], proj_mats, depth_values, pad=24)
+            volume_feat = self.build_volume_costvar_img(batch['src_inps'], feats[full_indices[:, :, 0], full_indices[:, :, 1]], proj_mats, depth_values, pad=24)
             volume_feat = self.cost_reg_2(volume_feat) # (B, 1, D, h, w)
             volume_feat = volume_feat.reshape(1,-1,*volume_feat.shape[2:])
 
-
             # build rays
-            depth = (near + far) / 2.
-            depth = torch.ones_like(batch['src_inps'][0, 0, 0]) * depth
-            std = (far - near) / 2.
-            std = torch.ones_like(batch['src_inps'][0, 0, 0]) * std
-            depth = depth[None]
-            std = std[None]
-            near_far = torch.stack([depth-std, depth+std], dim=1)
-
             rays = batch['rays_0']
 
             # batchify rays for mlp
-            mlp_view_ret = self.batchify_rays_for_mlp(rays, level=0, batch=batch, im_feat=feats[:, views], feature_volume=volume_feat, nerf_model=self.nerf)
+            mlp_view_ret = self.batchify_rays_for_mlp(rays, level=0, batch=batch, im_feat=feats[full_indices[:, :, 0], full_indices[:, :, 1]], feature_volume=volume_feat, nerf_model=self.nerf)
 
-            mlp_level_ret.update({key+f'_view{v}': mlp_view_ret[key] for key in mlp_view_ret})
+            mlp_level_ret.update({key+f'_view{k}': mlp_view_ret[key] for key in mlp_view_ret})
 
-        volume_rendered_ret = self.merge_mlp_outputs(mlp_level_ret, batch, N_CV)
+        volume_rendered_ret = self.merge_mlp_outputs(mlp_level_ret, K)
         volume_render_ret = {}
         volume_render_ret.update({key+f'_level0': volume_rendered_ret[key] for key in volume_rendered_ret})
 

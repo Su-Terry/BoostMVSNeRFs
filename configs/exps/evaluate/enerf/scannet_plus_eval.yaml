@@ -1,0 +1,24 @@
+parent_cfg: configs/exps/evaluate/enerf/base_eval.yaml
+save_tag: scannet_plus
+
+save_tag: scannet_plus
+
+dataset_module: lib.datasets.scannet_plus.enerf_base
+
+enerf:
+    cas_config:
+        render_if: [False, True]
+
+train_dataset:
+    data_root: 'scannet_plus' #
+    split: 'train'
+    input_h_w: [480, 640]
+    batch_size: 1
+    input_ratio: 1.
+
+test_dataset:
+    data_root: 'scannet_plus' #
+    split: 'test'
+    input_h_w: [480, 640]
+    batch_size: 1
+    input_ratio: 1.

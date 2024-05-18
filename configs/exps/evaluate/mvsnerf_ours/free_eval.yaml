@@ -1,7 +1,7 @@
-parent_cfg: configs/exps/evaluate/enerf/base_eval.yaml
+parent_cfg: configs/exps/evaluate/mvsnerf_ours/base_eval.yaml
 save_tag: free
 
-dataset_module: lib.datasets.free.enerf_base
+dataset_module: lib.datasets.free.mvsnerf_base
 
 train:
     batch_size: 1

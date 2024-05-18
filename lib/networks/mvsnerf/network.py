@@ -999,11 +999,8 @@ class Network(nn.Module):
         return raw
 
     def render_rays(self, rays, **kwargs):
-        # profile memory
-        # print(torch.cuda.memory_summary())
 
         level, batch, im_feat, feat_volume, nerf_model = kwargs['level'], kwargs['batch'], kwargs['im_feat'], kwargs['feature_volume'], kwargs['nerf_model']
-        # world_xyz, uvd, z_vals = sample_along_depth(rays, N_samples=cfg.enerf.cas_config.num_samples[level], level=level)
 
         world_xyz, z_vals = self.ray_marcher(rays[0], cfg.enerf.cas_config.num_samples[level])
 
@@ -1013,36 +1010,21 @@ class Network(nn.Module):
         mask = torch.ones(B, N_rays, N_samples, device=world_xyz.device)
 
         for i in range(0, N_rays, chunk):
-            # print cuda memory
-
             world_xyz_i = world_xyz[:, i:i + chunk]
-            # uvd_i = uvd[:, i:i + chunk]
             rays_i = rays[:, i:i + chunk]
-            # z_vals_i = z_vals[:, i:i + chunk]
-            # rgbs = unpreprocess(batch['src_inps'], render_scale=cfg.enerf.cas_config.render_scale[level])
-            # up_feat_scale = cfg.enerf.cas_config.render_scale[level] / cfg.enerf.cas_config.im_ibr_scale[level]
-            # if up_feat_scale != 1. and i == 0:
-            #     B, S, C, H, W = im_feat.shape
-            #     im_feat = F.interpolate(im_feat.reshape(B*S, C, H, W), None, scale_factor=up_feat_scale, align_corners=True, mode='bilinear').view(B, S, C, int(H*up_feat_scale), int(W*up_feat_scale))
-            # # img_feat_rgb = torch.cat((im_feat, rgbs), dim=2)
+
             H_O, W_O = kwargs['batch']['src_inps'].shape[-2:]
             B, H, W = 1, int(H_O * cfg.enerf.cas_config.render_scale[level]), int(W_O * cfg.enerf.cas_config.render_scale[level])
             # uvd_i[..., 0], uvd_i[..., 1] = (uvd_i[..., 0]) / (W-1), (uvd_i[..., 1]) / (H-1)
 
             inv_scale = torch.tensor([W-1, H-1], dtype=torch.float32, device=world_xyz.device)
-            # print(batch['src_exts'][0][0])
             uvd_i = get_ndc_coordinate(batch['src_exts'][0][0], batch['src_ixts'][0][0], world_xyz_i[0], inv_scale, near=batch['near_far'].min(), far=batch['near_far'].max(), pad=24)[None]
             raw = self.rendering(batch, world_xyz_i[0], uvd_i, z_vals, rays_i[..., :3], rays_i[..., 3:6], feat_volume)
-            # vox_feat = get_vox_feat(uvd_i.reshape(B, -1, 3), feat_volume)
-            # img_feat_rgb_dir = get_img_feat(world_xyz_i, img_feat_rgb, batch, self.training, level) # B * N * S * (8+3+4)
-            # net_output_i = nerf_model(vox_feat, img_feat_rgb_dir) 
 
             net_output_i = nerf_model(raw)
-            # print(net_output_i.shape)
             net_output_i = net_output_i.reshape(B, -1, N_samples, net_output_i.shape[-1])
         
             with torch.no_grad():
-                # inv_scale = torch.tensor([W-1, H-1], dtype=torch.float32, device=net_output.device)
                 mask_i = mask_viewport(world_xyz_i, kwargs['batch']['src_exts'], kwargs['batch']['src_ixts'], inv_scale)
                 mask_i = mask_i.reshape(B, -1, N_samples)
                 mask_i = torch.ones_like(mask_i)
@@ -1070,28 +1052,15 @@ class Network(nn.Module):
         return all_ret
 
     def merge_mlp_outputs(self, outputs, batch, N_CV):
-        # print(outputs.keys())
-        # assert (outputs[f'net_output_view0'] != outputs[f'net_output_view1']).any()
         net_outputs = torch.stack([outputs[f'net_output_view{i}'] for i in range(N_CV)], dim=1)
         masks = torch.stack([outputs[f'mask_view{i}'] for i in range(N_CV)], dim=1)
         z_vals = torch.stack([outputs[f'z_vals_view{i}'] for i in range(N_CV)], dim=1)
         
-        # outputs = []
-        # for i in range(N_CV):
-        #     outputs.append(raw2outputs_blend(net_outputs[:, i:i+1], torch.ones_like(masks[:, i:i+1]), z_vals[:, i:i+1], cfg.enerf.white_bkgd)['rgb'])
-        
-        # prev_masks = torch.ones_like(masks)
-        # for i in range(N_CV):
-        #     masks[:, i] = masks[:, i] * prev_masks[:, i]
-        #     prev_masks[:, i] = prev_masks[:, i] * (1 - masks[:, i])
         masks_sum = masks.sum(1)
         for i in range(N_CV):
             masks[:, i] = torch.where(masks_sum > 0, masks[:, i] / masks_sum, 1 / N_CV)
                     
         volume_render_outputs = raw2outputs_blend(net_outputs, masks, z_vals, cfg.enerf.white_bkgd)
-        # store every rgb
-        # volume_render_outputs.update({'N_CV': N_CV})
-        # volume_render_outputs.update({'rgb_view{}'.format(i): outputs[i] for i in range(N_CV)})
         return volume_render_outputs
 
 #####################################################################################################################
@@ -1101,9 +1070,6 @@ class Network(nn.Module):
         for i, (src_ext, src_ixt) in enumerate(zip(batch['src_exts'][0], batch['src_ixts'][0])):
             proj_mat_l = torch.eye(4)
             src_ixt[:2] *= 0.25
-            # print(src_ixt.shape, src_ext.shape)
-            # print(src_ixt)
-            # print(src_ixt)
             proj_mat_l[:3, :4] = src_ixt @ src_ext[:3, :4]
             src_ixt[:2] *= 4
             if i==0:
@@ -1112,28 +1078,14 @@ class Network(nn.Module):
             else:
                 proj_mats += [proj_mat_l @ ref_proj_inv]
 
-        # print(torch.from_numpy(np.stack(proj_mats)[:, :3]).float().unsqueeze(0))
-
         return torch.from_numpy(np.stack(proj_mats)[:, :3]).float().unsqueeze(0)
 
-    # def forward(self, imgs, proj_mats, near_far, tar_view, scene_name, all_scenes, pad=0,  return_color=False, lindisp=False):
-        # imgs: (B, V, 3, H, W)
-        # proj_mats: (B, V, 3, 4) from fine to coarse
-        # init_depth_min, depth_interval: (B) or float
-        # near_far (B, V, 2)
     def forward(self, batch):
-
-        N_views = batch['all_src_inps'].shape[1]   
-        selected_views = torch.from_numpy(np.array(list(combinations(range(N_views), 3))))
-        
         D = cfg.enerf.cas_config.num_samples[0]
-        N_CV = 1
         
         feats = self.feature(batch['all_src_inps'][0]) # (B*V, C, H, W)
         feats = feats.view(1, -1, *feats.shape[1:])  # (B, V, C, h, w)
                 
-        # volume_render_ret = {}
-        # selected_views_i = selected_views[k_best[f'k_best_level{last}']]
         mlp_level_ret = {}
         v = 0
         views = torch.tensor([0, 1, 2]).to(batch['all_src_inps'].device)
@@ -1142,18 +1094,12 @@ class Network(nn.Module):
         depth_values = near * (1.-t_vals) + far * (t_vals)
         depth_values = depth_values.unsqueeze(0).to(batch['all_src_inps'].device)
 
-            # print(near)
-            # print(far)
-            # print(batch['depth_ranges'][0, views])
-            # print(depth_values)
         batch['near_far'] = torch.stack([near, far]).to(batch['all_src_inps'].device)
-            # print(batch['near_far'])
         batch['src_inps'] = batch['all_src_inps'][:, views]
         batch['src_exts'] = batch['all_src_exts'][:, views]
         batch['src_ixts'] = batch['all_src_ixts'][:, views]
         proj_mats = self.get_proj_mats(batch).to(batch['all_src_inps'].device)
         volume_feat = self.build_volume_costvar_img(batch['src_inps'], feats[:, views], proj_mats, depth_values, pad=24)
-        # print(volume_feat.shape)
         volume_feat = self.cost_reg_2(volume_feat) # (B, 1, D, h, w)
         volume_feat = volume_feat.reshape(1,-1,*volume_feat.shape[2:])
 
@@ -1166,14 +1112,6 @@ class Network(nn.Module):
         volume_rendered_ret = raw2outputs(mlp_level_ret['net_output_view0'], mlp_level_ret['z_vals_view0'], cfg.enerf.white_bkgd)
         volume_render_ret = {}
         volume_render_ret.update({key+f'_level0': volume_rendered_ret[key] for key in volume_rendered_ret})
-
-        # h, w = batch['meta'][f'h_0'], batch['meta'][f'w_0']
-        # H, W = batch['src_inps'].shape[-2:]
-        # H, W = int(H * cfg.enerf.cas_config.render_scale[0]), int(W * cfg.enerf.cas_config.render_scale[0])
-        # volume_render_ret['rgb_level0'] = volume_render_ret['rgb_level0'].reshape(-1, H, W, 3).permute(0, 3, 1, 2)
-        # volume_render_ret['rgb_level0'] = F.interpolate(volume_render_ret['rgb_level0'], (h, w), mode='bilinear')
-        # B = 1
-        # volume_render_ret['rgb_level0'] = volume_render_ret['rgb_level0'].permute(0, 2, 3, 1).reshape(B, -1, 3)
                 
         return volume_render_ret
 

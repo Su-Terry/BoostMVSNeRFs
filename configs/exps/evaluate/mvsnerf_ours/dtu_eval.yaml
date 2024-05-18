@@ -1,0 +1,4 @@
+parent_cfg: configs/exps/evaluate/mvsnerf_ours/base_eval.yaml
+save_tag: dtu
+
+dataset_module: lib.datasets.dtu.mvsnerf_base

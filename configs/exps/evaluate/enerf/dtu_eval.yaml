@@ -1,1 +1,4 @@
 parent_cfg: configs/exps/evaluate/enerf/base_eval.yaml
+save_tag: dtu
+
+dataset_module: lib.datasets.dtu.enerf_base

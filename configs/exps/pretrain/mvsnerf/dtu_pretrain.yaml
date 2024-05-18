@@ -4,3 +4,17 @@ exp_name: mvsnerf
 
 # module
 network_module: lib.networks.mvsnerf.network
+
+enerf:
+  cas_config:
+    num: 1
+    depth_inv: [False]
+    render_scale: [1.0]
+    num_samples: [32]
+    render_if: [True]
+
+train:
+  batch_size: 1
+
+test:
+  batch_size: 1

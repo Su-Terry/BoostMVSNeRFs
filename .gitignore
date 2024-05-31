@@ -13,3 +13,7 @@ __pycache__/
 *.jpg
 
 *_new/
+
+# Rendering Videos files
+*video
+*video.py

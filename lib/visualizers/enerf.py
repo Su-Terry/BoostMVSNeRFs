@@ -27,7 +27,7 @@ class Visualizer:
         assert(B == 1)
         pred_rgb = output[f'rgb_level{i}'].reshape(h, w, 3).detach().cpu().numpy()
         # depth = output[f'depth_level{i}'].reshape(h, w).detach().cpu().numpy()
-        crop_h, crop_w = int(h * 0.1), int(w * 0.1)
+        # crop_h, crop_w = int(h * 0.1), int(w * 0.1)
         # pred_rgb = pred_rgb[crop_h:, crop_w:-crop_w]
         # depth = depth[crop_h:, crop_w:-crop_w]
         self.imgs.append(pred_rgb)
@@ -40,7 +40,7 @@ class Visualizer:
 
     def summarize(self):
         img_rgb = (np.array(self.imgs)*255).astype(np.uint8)
-        imageio.mimwrite(os.path.join(cfg.result_dir, 'color.mp4'), img_rgb, fps=30)
+        imageio.mimwrite(os.path.join(cfg.result_dir, 'color.mp4'), img_rgb, fps=10)
         
         color1 = (0, 0, 255)     #red
         color2 = (0, 165, 255)   #orange

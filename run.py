@@ -51,11 +51,12 @@ def run_preprocess():
                            epoch=cfg.test.epoch)
     network.eval()
     
-    data_loader_train = make_data_loader(cfg, is_train=True)
+    # data_loader_train = make_data_loader(cfg, is_train=True)
     data_loader_test = make_data_loader(cfg, is_train=False)
     
     print('Preprocessing train set...')
-    outputs_train = get_view_selection(data_loader_train, network)
+    # outputs_train = get_view_selection(data_loader_train, network)
+    outputs_train = {}
     print('Preprocessing test set...')
     outputs_test = get_view_selection(data_loader_test, network)
     outputs = {**outputs_train, **outputs_test}

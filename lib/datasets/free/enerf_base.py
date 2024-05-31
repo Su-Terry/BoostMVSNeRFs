@@ -64,10 +64,6 @@ class Dataset:
     def __getitem__(self, index_meta):
         index, input_views_num = index_meta
         scene, tar_view, src_views = self.metas[index]
-        if self.split == 'train':
-            if np.random.random() < 0.1:
-                src_views = src_views + [tar_view]
-            src_views = random.sample(src_views, input_views_num)
         scene_info = self.scene_infos[scene]
         
         tar_img, tar_mask, tar_ext, tar_ixt = self.read_tar(scene_info, tar_view)
@@ -94,14 +90,15 @@ class Dataset:
 
         for i in range(cfg.enerf.cas_config.num):
             rays, rgb, msk = enerf_utils.build_rays(tar_img, tar_ext, tar_ixt, tar_mask, i, self.split)
-            tmp_tar_img = cv2.resize(tar_img, self.input_h_w[::-1], interpolation=cv2.INTER_AREA)
-            tmp_tar_mask = cv2.resize(tar_mask, self.input_h_w[::-1], interpolation=cv2.INTER_AREA)
-            rays, _, _ = enerf_utils.build_rays(tmp_tar_img, tar_ext, tar_ixt, tmp_tar_mask, i, self.split)
+            if self.split == 'test':
+                tmp_tar_img = cv2.resize(tar_img, self.input_h_w[::-1], interpolation=cv2.INTER_AREA)
+                tmp_tar_mask = cv2.resize(tar_mask, self.input_h_w[::-1], interpolation=cv2.INTER_AREA)
+                rays, _, _ = enerf_utils.build_rays(tmp_tar_img, tar_ext, tar_ixt, tmp_tar_mask, i, self.split)
             ret.update({f'rays_{i}': rays, f'rgb_{i}': rgb.astype(np.float32), f'msk_{i}': msk})
-            # s = cfg.enerf.cas_config.volume_scale[i]
-            ret['meta'].update({f'h_{i}': int(H), f'w_{i}': int(W)})
-        ret['rgb_0'] = ret['rgb_1']
-        ret['msk_0'] = ret['msk_1']
+            s = cfg.enerf.cas_config.volume_scale[i]
+            ret['meta'].update({f'h_{i}': int(H*s), f'w_{i}': int(W*s)})
+        if self.split == 'test' and cfg.enerf.cas_config.num == 2:
+            ret['rgb_0'], ret['msk_0'] = ret['rgb_1'], ret['msk_1']
         return ret
 
     def read_src(self, scene, src_views):

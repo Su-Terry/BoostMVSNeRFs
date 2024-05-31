@@ -362,7 +362,7 @@ def load_model(net,
 
     pths = [
         int(pth.split('.')[0]) for pth in os.listdir(model_dir)
-        if pth != 'latest.pth'
+        if pth != 'latest.pth' and pth.endswith('pth')
     ]
     if len(pths) == 0 and 'latest.pth' not in os.listdir(model_dir):
         return 0
@@ -497,8 +497,11 @@ def load_pretrain(net, model_dir):
     if not os.path.exists(model_dir):
         return 1
 
-    pths = [int(pth.split('.')[0]) for pth in os.listdir(model_dir) if pth != 'latest.pth']
+    pths = [int(pth.split('.')[0]) for pth in os.listdir(model_dir) if pth != 'latest.pth' and pth.endswith('pth')]
     if len(pths) == 0 and 'latest.pth' not in os.listdir(model_dir):
+        CRED = '\033[91m'
+        CEND = '\033[0m'
+        print(CRED + "Pretrained Model not Found!" + CEND)
         return 1
 
     if 'latest.pth' in os.listdir(model_dir):

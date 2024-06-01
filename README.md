@@ -7,7 +7,7 @@
 
 
 ## News
-- **06/02/2024** Code Release!
+- **06/01/2024** Code Release!
 
 ## Installation
 
@@ -75,7 +75,9 @@ unzip dtu_example.zip
 Download the [Free dataset](https://www.dropbox.com/sh/jmfao2c4dp9usji/AAC7Ydj6rrrhy1-VvlAVjyE_a?dl=0) from the original [F2-NeRF repo](https://github.com/Totoro97/f2-nerf).
 
 #### 2. ScanNet_plus Dataset (originated from ScanNet)
-We adjusted the original dataset by removing black areas from the images due to distortion in the ScanNet dataset. Link.
+We adjusted the original dataset by removing black areas from the images due to distortion in the ScanNet dataset. 
+1. Before download ScanNet, please make sure you fill in this form before downloading the data: https://kaldir.vc.in.tum.de/scannet/ScanNet_TOS.pdf
+2. Download the [ScanNet dataset](https://drive.google.com/file/d/1uu_xGSBI_gkepaN4FnAZs9lkD0eKffnu/view?usp=sharing).
 <!-- 
 Follow the guidelines to download the ScanNet dataset and convert it to our ScanNet_plus dataset. Big thanks to Point-NeRF for their installation guidelines, [link](https://github.com/Xharlie/pointnerf?tab=readme-ov-file#scannet).
 
@@ -93,24 +95,26 @@ Follow the guidelines to download the ScanNet dataset and convert it to our Scan
  -->
 ## Evaluation
 
-### Evaluate the pretrained model Free and ScanNet datasets
+#### 1. Evaluate the pre-trained model on the Free datasets.
 
 ```bash
-python run.py --type evaluate --cfg_file configs/exps/evaluate/enerf/free_eval.yaml
-python run.py --type evaluate --cfg_file configs/exps/evaluate/enerf/scannet_eval.yaml
+bash scripts/exps/evaluate/free_pretrained.sh enerf
+bash scripts/exps/evaluate/free_pretrained.sh enerf_ours
+bash scripts/exps/evaluate/free_pretrained.sh mvsnerf
+bash scripts/exps/evaluate/free_pretrained.sh mvsnerf_ours
 ```
 
-## Training and fine-tuning
+#### 2. Evaluate the pre-trained model on the ScanNet_plus datasets.
 
-### Training
-<!-- 
-Use the following command to train a generalizable model on DTU.
 ```bash
-python train_net.py --cfg_file configs/pretrain/enerf/dtu_pretrain.yaml 
+bash scripts/exps/evaluate/scannet_plus_pretrained.sh enerf
+bash scripts/exps/evaluate/scannet_plus_pretrained.sh enerf_ours
+bash scripts/exps/evaluate/scannet_plus_pretrained.sh mvsnerf
+bash scripts/exps/evaluate/scannet_plus_pretrained.sh mvsnerf_ours
 ```
- -->
 
-### Fine-tuning
+## Fine-tuning
+
 #### 1. On the grass scene of the Free dataset with ENeRF/ENeRF_ours/MVSNeRF/MVSNeRF_ours.
 ```bash
 bash scripts/exps/finetune/free_ft.sh enerf        grass

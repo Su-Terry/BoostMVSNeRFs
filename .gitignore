@@ -11,6 +11,9 @@ __pycache__/
 *.ipynb
 *.png
 *.jpg
-data
 
 *_new/
+
+# Rendering Videos files
+*video
+*video.py

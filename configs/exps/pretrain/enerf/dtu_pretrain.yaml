@@ -1,14 +1,14 @@
-task: enerf
+task: pretrain
 gpus: [0]
-exp_name: 'dtu_pretrain'
+exp_name: enerf
 
 # module
 train_dataset_module: lib.datasets.dtu.base
 test_dataset_module: lib.datasets.dtu.base
 network_module: lib.networks.enerf.network
-loss_module: lib.train.losses.base
-evaluator_module: lib.evaluators.base
-visualizer_module: lib.visualizers.base
+loss_module: lib.train.losses.enerf
+evaluator_module: lib.evaluators.enerf
+visualizer_module: lib.visualizers.enerf
 
 save_result: True
 clear_result: True
@@ -59,7 +59,7 @@ test_dataset:
     input_ratio: 1.
 
 train:
-    batch_size: 1
+    batch_size: 4
     lr: 5e-4
     weight_decay: 0.
     epoch: 300
@@ -75,7 +75,7 @@ train:
     num_workers: 4
 
 test:
-    batch_size: 1
+    batch_size: 4
     collator: 'enerf' 
     batch_sampler: 'enerf'
     sampler_meta:

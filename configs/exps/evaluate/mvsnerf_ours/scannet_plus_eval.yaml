@@ -1,0 +1,18 @@
+parent_cfg: configs/exps/evaluate/mvsnerf_ours/base_eval.yaml
+save_tag: scannet_plus
+
+dataset_module: lib.datasets.scannet_plus.mvsnerf_base
+
+train_dataset:
+    data_root: 'scannet_plus' #
+    split: 'train'
+    input_h_w: [480, 640]
+    batch_size: 1
+    input_ratio: 1.
+
+test_dataset:
+    data_root: 'scannet_plus' #
+    split: 'test'
+    input_h_w: [480, 640]
+    batch_size: 1
+    input_ratio: 1.

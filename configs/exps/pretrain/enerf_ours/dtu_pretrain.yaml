@@ -1,0 +1,24 @@
+parent_cfg: configs/exps/pretrain/enerf/dtu_pretrain.yaml
+gpus: [0]
+exp_name: enerf_ours
+
+# module
+network_module: lib.networks.boost_enerf.network
+
+# task config
+enerf:
+    train_input_views: [5, 6, 7]
+    test_input_views: 6
+    cost_volume_input_views: 3
+    cas_config:
+        k_best: 4
+
+train:
+    sampler_meta:
+        input_views_num: [5, 6, 7] 
+        input_views_prob: [0.1, 0.8, 0.1]
+
+test:
+    batch_size: 4
+    sampler_meta:
+        input_views_num: [6]

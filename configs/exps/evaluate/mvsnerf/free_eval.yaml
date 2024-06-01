@@ -1,0 +1,23 @@
+parent_cfg: configs/exps/evaluate/mvsnerf/base_eval.yaml
+save_tag: free
+
+dataset_module: lib.datasets.free.mvsnerf_base
+
+train:
+    batch_size: 1
+test:
+    batch_size: 1
+
+train_dataset:
+    data_root: 'free_dataset' #
+    split: 'train'
+    input_h_w: [512, 512]
+    batch_size: 1
+    input_ratio: 1.
+
+test_dataset:
+    data_root: 'free_dataset' #
+    split: 'test'
+    input_h_w: [512, 512]
+    batch_size: 1
+    input_ratio: 1.

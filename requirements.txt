@@ -13,3 +13,5 @@ pyopengl
 imgui
 termcolor
 trimesh
+inplace-abn
+imageio[ffmpeg]==2.31.4

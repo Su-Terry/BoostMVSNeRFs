@@ -5,6 +5,8 @@ exp_name: enerf_ours
 # module
 network_module: lib.networks.boost_enerf.network
 
+require_view_selection: True
+
 # task config
 enerf:
     train_input_views: [5, 6, 7]

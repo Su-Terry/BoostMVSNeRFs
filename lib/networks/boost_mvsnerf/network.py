@@ -25,7 +25,7 @@ class Network(network.Network):
         batch['src_exts'] = batch['all_src_exts'][:, src_views_id]
         batch['src_ixts'] = batch['all_src_ixts'][:, src_views_id]
 
-        ray_tar = batch['rays_0'][0]
+        ray_tar = batch['rays_0']
         world_xyz, z_vals = self.ray_marcher(ray_tar, 128)
         N_samples = 128
 
@@ -98,7 +98,7 @@ class Network(network.Network):
         level, batch, im_feat, feat_volume, nerf_model = kwargs['level'], kwargs['batch'], kwargs['im_feat'], kwargs['feature_volume'], kwargs['nerf_model']
         # world_xyz, uvd, z_vals = sample_along_depth(rays, N_samples=cfg.enerf.cas_config.num_samples[level], level=level)
 
-        world_xyz, z_vals = self.ray_marcher(rays[0], cfg.enerf.cas_config.num_samples[level])
+        world_xyz, z_vals = self.ray_marcher(rays, cfg.enerf.cas_config.num_samples[level])
 
         B, N_rays, N_samples = world_xyz.shape[:3]
         chunk = N_rays // 10
@@ -172,8 +172,7 @@ class Network(network.Network):
         last = cfg.enerf.cas_config.num - 1
         D = cfg.enerf.cas_config.num_samples[last-1]
 
-        feats = self.feature(batch['all_src_inps'][0]) # (B*V, C, H, W)
-        feats = feats.view(1, -1, *feats.shape[1:])  # (B, V, C, h, w)
+        feats = self.feature(batch['all_src_inps']) # (B, V, C, H, W)
         
         selected_views = selected_views[k_best]
         mlp_level_ret = {}

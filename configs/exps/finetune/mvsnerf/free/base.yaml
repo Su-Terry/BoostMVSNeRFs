@@ -1,0 +1,13 @@
+task: mvsnerf_ft
+parent_cfg: configs/exps/evaluate/mvsnerf_ours/free_eval.yaml
+
+enerf:
+  cas_config:
+    num_samples: [8] # Prevent OOM. Set it to 32 to achieve the performance described in the paper.
+
+train:
+    epoch: 40
+
+ep_iter: 1000
+save_ep: 1
+eval_ep: 1

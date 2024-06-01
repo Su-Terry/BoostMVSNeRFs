@@ -1,0 +1,8 @@
+parent_cfg: configs/exps/finetune/mvsnerf_ours/free/base.yaml
+exp_name: sky_ft
+pretrain: sky_ft
+
+train_dataset:
+    scene: sky
+test_dataset:
+    scene: sky

@@ -1,0 +1,12 @@
+task: enerf_ft
+parent_cfg: configs/exps/evaluate/enerf/free_eval.yaml
+pretrain: enerf
+
+enerf:
+    cas_config:
+        render_if: [True, True]
+
+train:
+    epoch: 150 # pretrained epoch + 11
+save_ep: 1
+eval_ep: 1

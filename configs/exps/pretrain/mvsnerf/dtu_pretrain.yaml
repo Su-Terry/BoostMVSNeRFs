@@ -5,6 +5,8 @@ exp_name: mvsnerf
 # module
 network_module: lib.networks.mvsnerf.network
 
+require_view_selection: True
+
 enerf:
   cas_config:
     num: 1
@@ -14,7 +16,7 @@ enerf:
     render_if: [True]
 
 train:
-  batch_size: 4
+  batch_size: 1
 
 test:
   batch_size: 1

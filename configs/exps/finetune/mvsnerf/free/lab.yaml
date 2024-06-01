@@ -1,0 +1,9 @@
+parent_cfg: configs/exps/finetune/mvsnerf/free/base.yaml
+exp_name: lab_ft
+pretrain: lab_ft
+
+train_dataset:
+    scene: lab
+test_dataset:
+    scene: lab
+

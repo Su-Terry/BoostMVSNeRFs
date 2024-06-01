@@ -41,8 +41,6 @@ def run_preprocess():
     from lib.networks import make_network
     from lib.utils import net_utils
     import json
-
-    print('Preprocessing mask...')
     
     network = make_network(cfg, preprocess=True).cuda()
     net_utils.load_network(network,
@@ -54,10 +52,10 @@ def run_preprocess():
     data_loader_train = make_data_loader(cfg, is_train=True)
     data_loader_test = make_data_loader(cfg, is_train=False)
     
-    print('Preprocessing train set...')
+    print("\033[93mPreprocessing train set...\033[0m")
     outputs_train = get_view_selection(data_loader_train, network)
     # outputs_train = {}
-    print('Preprocessing test set...')
+    print("\033[93mPreprocessing test set...\033[0m")
     outputs_test = get_view_selection(data_loader_test, network)
     outputs = {**outputs_train, **outputs_test}
     
@@ -148,4 +146,9 @@ def run_visualize():
     visualizer.summarize()
 
 if __name__ == '__main__':
+    if cfg.require_view_selection:
+        view_selection_file = os.path.join(cfg.result_dir, f'view_selection.json')
+        if not os.path.exists(view_selection_file):
+            print("\033[93mView selection file not found. Preprocessing...\033[0m")
+            run_preprocess()
     globals()['run_' + args.type]()

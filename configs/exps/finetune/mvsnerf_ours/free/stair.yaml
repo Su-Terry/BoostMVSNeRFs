@@ -1,0 +1,8 @@
+parent_cfg: configs/exps/finetune/mvsnerf_ours/free/base.yaml
+exp_name: stair_ft
+pretrain: stair_ft
+
+train_dataset:
+    scene: stair
+test_dataset:
+    scene: stair

@@ -93,6 +93,52 @@ def synchronize():
     if world_size == 1:
         return
     dist.barrier()
+    
+def run_preprocess():
+    from lib.datasets import make_data_loader
+    from lib.networks import make_network
+    from lib.utils import net_utils
+    import json
+    
+    network = make_network(cfg, preprocess=True).cuda()
+    net_utils.load_network(network,
+                           cfg.trained_model_dir,
+                           resume=cfg.resume,
+                           epoch=cfg.test.epoch)
+    network.eval()
+    
+    data_loader_train = make_data_loader(cfg, is_train=True)
+    data_loader_test = make_data_loader(cfg, is_train=False)
+    
+    print("\033[93mPreprocessing train set...\033[0m")
+    outputs_train = get_view_selection(data_loader_train, network)
+    # outputs_train = {}
+    print("\033[93mPreprocessing test set...\033[0m")
+    outputs_test = get_view_selection(data_loader_test, network)
+    outputs = {**outputs_train, **outputs_test}
+    
+    # dump outputs to json file
+    view_selection_file = os.path.join(cfg.result_dir, f'view_selection.json')
+    os.makedirs(cfg.result_dir, exist_ok=True)
+    with open(view_selection_file, 'w') as f:
+        json.dump(outputs, f)
+        
+def get_view_selection(data_loader, network):
+    import tqdm
+    import torch
+
+    outputs = {}
+    for batch in tqdm.tqdm(data_loader):
+        for k in batch:
+            if k != 'meta':
+                batch[k] = batch[k].cuda()
+        with torch.no_grad():
+            torch.cuda.synchronize()
+            output = network.forward_view_selection(batch)
+            torch.cuda.synchronize()
+        outputs.update(output)
+    return outputs
+
 
 def main():
     if cfg.distributed:
@@ -102,6 +148,12 @@ def main():
                                              init_method="env://")
         synchronize()
 
+    if cfg.require_view_selection:
+        view_selection_file = os.path.join(cfg.result_dir, f'view_selection.json')
+        if not os.path.exists(view_selection_file):
+            print("\033[93mView selection file not found. Preprocessing...\033[0m")
+            run_preprocess()
+            
     network = make_network(cfg)
     if args.test:
         test(cfg, network)

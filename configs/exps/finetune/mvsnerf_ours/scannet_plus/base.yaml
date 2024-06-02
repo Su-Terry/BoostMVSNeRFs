@@ -1,6 +1,10 @@
 task: mvsnerf_ours_ft
 parent_cfg: configs/exps/evaluate/mvsnerf_ours/scannet_plus_eval.yaml
 
+enerf:
+  cas_config:
+    num_samples: [8] # Prevent OOM. Set it to 32 to achieve the performance described in the paper.
+
 train:
     batch_size: 1
     epoch: 150 # pretrained epoch + 11

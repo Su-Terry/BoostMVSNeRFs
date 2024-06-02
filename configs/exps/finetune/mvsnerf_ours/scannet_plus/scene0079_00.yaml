@@ -1,0 +1,7 @@
+parent_cfg: configs/exps/finetune/mvsnerf_ours/scannet_plus/base.yaml
+exp_name: scene0079_00_ft
+
+train_dataset:
+    scene: scene0079_00
+test_dataset:
+    scene: scene0079_00

@@ -5,8 +5,6 @@ exp_name: mvsnerf
 # module
 network_module: lib.networks.mvsnerf.network
 
-require_view_selection: True
-
 enerf:
   cas_config:
     num: 1

@@ -1,0 +1,11 @@
+task: mvsnerf_ours_ft
+parent_cfg: configs/exps/evaluate/mvsnerf_ours/scannet_plus_eval.yaml
+
+train:
+    batch_size: 1
+    epoch: 150 # pretrained epoch + 11
+test:
+    batch_size: 1
+
+save_ep: 1
+eval_ep: 1

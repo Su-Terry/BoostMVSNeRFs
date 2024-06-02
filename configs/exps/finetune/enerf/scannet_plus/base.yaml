@@ -1,0 +1,15 @@
+task: enerf_ours_ft
+parent_cfg: configs/exps/evaluate/enerf/scannet_plus_eval.yaml
+
+enerf:
+    cas_config:
+        render_if: [True, True]
+
+train:
+    batch_size: 1
+    epoch: 150 # pretrained epoch + 11
+test:
+    batch_size: 1
+
+save_ep: 1
+eval_ep: 1

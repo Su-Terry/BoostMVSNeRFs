@@ -148,7 +148,7 @@ def main():
                                              init_method="env://")
         synchronize()
 
-    if cfg.require_view_selection:
+    if cfg.get('require_view_selection'):
         view_selection_file = os.path.join(cfg.result_dir, f'view_selection.json')
         if not os.path.exists(view_selection_file):
             print("\033[93mView selection file not found. Preprocessing...\033[0m")

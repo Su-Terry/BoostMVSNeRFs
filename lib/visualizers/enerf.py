@@ -40,7 +40,7 @@ class Visualizer:
 
     def summarize(self):
         img_rgb = (np.array(self.imgs)*255).astype(np.uint8)
-        imageio.mimwrite(os.path.join(cfg.result_dir, 'color.mp4'), img_rgb, fps=10)
+        imageio.mimwrite(os.path.join(cfg.result_dir, 'color.mp4'), img_rgb, fps=60)
         
         color1 = (0, 0, 255)     #red
         color2 = (0, 165, 255)   #orange

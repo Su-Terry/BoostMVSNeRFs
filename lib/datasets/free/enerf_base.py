@@ -96,7 +96,7 @@ class Dataset:
                 rays, _, _ = enerf_utils.build_rays(tmp_tar_img, tar_ext, tar_ixt, tmp_tar_mask, i, self.split)
             ret.update({f'rays_{i}': rays, f'rgb_{i}': rgb.astype(np.float32), f'msk_{i}': msk})
             s = cfg.enerf.cas_config.volume_scale[i]
-            ret['meta'].update({f'h_{i}': int(H*s), f'w_{i}': int(W*s)})
+            ret['meta'].update({f'h_{i}': int(H), f'w_{i}': int(W)})
         if self.split == 'test' and cfg.enerf.cas_config.num == 2:
             ret['rgb_0'], ret['msk_0'] = ret['rgb_1'], ret['msk_1']
         return ret

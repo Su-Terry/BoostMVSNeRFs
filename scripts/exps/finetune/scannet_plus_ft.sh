@@ -3,7 +3,7 @@
 METHOD="$1"
 SCENE="$2"
 
-SCANNET_SCENES=('grass' 'hydrant' 'lab' 'pillar' 'road' 'sky' 'stair')
+SCANNET_SCENES=('scene0000_01' 'scene0079_00' 'scene0158_00' 'scene0316_00' 'scene0521_00' 'scene0553_00' 'scene0616_00' 'scene0653_00')
 
 # check if the scene is in the list of free scenes
 for var in "${SCANNET_SCENES[@]}"; do

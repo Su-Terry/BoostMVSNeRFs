@@ -1,0 +1,8 @@
+task: enerf_ft
+parent_cfg: configs/exps/finetune/enerf/scannet_plus/base.yaml
+exp_name: scene0521_00_ft
+
+train_dataset:
+    scene: scene0521_00
+test_dataset:
+    scene: scene0521_00

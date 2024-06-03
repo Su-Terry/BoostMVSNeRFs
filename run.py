@@ -128,7 +128,7 @@ def run_visualize():
     import torch
     from lib.visualizers import make_visualizer
     from lib.utils.data_utils import to_cuda
-
+    
     network = make_network(cfg).cuda()
     load_network(network,
                  cfg.trained_model_dir,

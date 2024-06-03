@@ -113,9 +113,11 @@ class Network(network.Network):
             src_masks_leveli = {key: src_masks_all[key] for key in src_masks_all if key.startswith(f'mask_level{i}')}
             k_best_i = self.search_k_best_views(src_masks_leveli, cfg.enerf.cas_config.k_best, level=i)
             k_best_i = torch.tensor(k_best_i, dtype=torch.long)
-            key = f'{batch["meta"]["scene"][0]}_{batch["meta"]["tar_view"][0]}'
-            val = k_best_i.detach().cpu().numpy().tolist()
-            k_best.update({key: val})
+            
+            keys = [f"{batch['meta']['scene'][j]}_{batch['meta']['tar_view'][j]}" for j in range(len(batch['meta']['scene']))]
+            # assert batch size = 1
+            vals = k_best_i.detach().cpu().numpy().tolist()
+            k_best.update({key: vals for key in keys})
         return k_best
     
     def render_rays(self, rays, **kwargs):

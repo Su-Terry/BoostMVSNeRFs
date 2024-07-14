@@ -1,5 +1,5 @@
 let lastHoveredxLabel = null;
-const xValues = [25, 37.5, 50, 62.5, 75];
+const xValues = [10, 20, 25, 50, 75, 100];
 
 new Chart("sparsityChart", {
     type: "line",
@@ -8,7 +8,7 @@ new Chart("sparsityChart", {
         datasets: [
             { 
                 label: 'ENeRF+ours',
-                data: [23.5, 24.3, 25.6, 26.1, 26.35],
+                data: [20.21, 22.04, 23.44, 25.56, 26.39, 27.54],
                 borderColor: "#66b266",
                 backgroundColor: '#329932',
                 fill: false,
@@ -17,7 +17,7 @@ new Chart("sparsityChart", {
             },
             { 
                 label: 'ENeRF',
-                data: [21.8, 22.7, 25, 25.05, 26.05],
+                data: [18.88, 20.75, 21.7, 24.99, 26.05, 27.05],
                 borderColor: "#a6a6a6",
                 backgroundColor: '#8c8c8c',
                 fill: false,

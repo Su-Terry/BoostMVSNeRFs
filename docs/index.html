@@ -140,6 +140,11 @@
                   </span>
                   <span>Data</span>
                 </a>
+                <a href="https://su-terry.github.io/BoostMVSNeRFs/"
+                   class="external-link button is-normal is-rounded is-dark">
+                   <img src="https://seeklogo.com/images/G/gradio-icon-logo-908AE1836C-seeklogo.com.png" alt="Gradio Icon" width="13" height="13">
+                  <span>Gradio</span>
+                </a>
             </span>
 		</div>
 
@@ -179,7 +184,7 @@
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
                 <h3> BoostMVSNeRFs renders high-quality 3D scenes in seconds </h3><br>
-                <p class="text-justify" style="color:red"> Here place the gradio demo. </p>
+                <p class="text-justify" style="color:red"> Live Gradio Demo. </p>
             </div>
         </div>
 
@@ -188,8 +193,7 @@
             <div class="col-md-8 col-md-offset-2">
                 <h3> BoostMVSNeRFs outperforms Generalizable and Per-scene Optimization NeRFs </h3><br>
 
-                <p class="text-justify" style="color:red"> Only MVSNeRF, F2-NeRF, Zip-NeRF results. </p>
-                <p class="text-justify" style="color:red"> Depth image doesn't seem good. </p>
+                <p class="text-justify" style="color:red"> No MVSNeRF, F2-NeRF, Zip-NeRF results. Depth images seem bad. </p>
 
                 <div class="text-center ">
                     <ul class="nav nav-pills center-pills">
@@ -197,8 +201,6 @@
                             onclick="selectCompVideo(this, activeScenePill)"><a>MVSNeRF</a></li>
                         <li class="method-pill active" data-value="enerf"
                             onclick="selectCompVideo(this, activeScenePill)"><a>ENeRF</a></li>
-                    </ul>
-                    <ul class="nav nav-pills center-pills">
                         <li class="method-pill" data-value="f2nerf"
                             onclick="selectCompVideo(this, activeScenePill)"><a>F2-NeRF</a></li>
                         <li class="method-pill" data-value="zipnerf"
@@ -293,23 +295,17 @@
                     </script>
                 </div>
             </div>
-        </div>
-        <br>
-        <br>
+        </div><br><br>
 
         <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <h3> BoostMVSNeRFs is robust with sparse input views </h3><br>
-                <p class="text-justify" style="color:red">
-                    The statistics is currently not correct. We will update it soon.
-                </p>
-                
-                <!-- top down layout -->
-                <canvas id="sparsityChart" style="max-height: 300px; max-width: 500px; margin: auto;"></canvas>
-                <script src="js/sparsity_chart.js"></script>
+            <div class="col-md-8 col-md-offset-2 text-center">
+                <h3>
+                    Nice rendering equation: Combining CV1 (left) & CV2 (right)
+                </h3><br>
+                <image src="./static/images/combined_rendering.png" width=60% style="display: block; margin: auto;"></image>
                 <br>
-                <p class="text-center">
-                    With more sparse input views, the performance drop of our method is less severe than ENeRF, demonstrating the robustness of our method against sparse input views by combining multiple cost volumes in rendering.
+                <p class="text-justify" style="width:85%; margin:auto">
+                    Using a single cost volume, as in traditional MVS-based NeRFs, often introduces padding artifacts or incorrect geometry, as indicated by the \textcolor{red}{\textbf{red}} dashed circles. Our method warps selected cost volumes to the novel view's frustum and applies 3D visibility scores $m_j$ as weights to blend multiple cost volumes during volume rendering. Combined rendering provides broader viewport coverage and combines information from multiple cost volumes, leading to improved image synthesis and alleviating artifacts.
                 </p>
             </div>
         </div><br><br>
@@ -317,7 +313,33 @@
         <div class="row">
             <div class="col-md-8 col-md-offset-2 text-center">
                 <h3>
-                    BoostMVSNeRFs is view consistent with more cost volumes
+                    3D visibility scores and 2D visibility masks.
+                </h3><br>
+                <image src="./static/images/visibility_mask.png" width=60% style="display: block; margin: auto;"></image>
+                <br>
+                <p class="text-justify" style="width:85%; margin:auto">
+                    For a novel view, depth distribution is estimated from three input views, from which 3D points are sampled and projected onto each view to determine visibility. These projections yield 3D visibility scores $m_j$, normalized across the views, and are subsequently volume rendered into a 2D visibility mask $\textbf{M}^{\text{2D}}$. This mask highlights the contribution of each input view to the cost volume and guides the rendering process, aiding in the selection of input views that optimize rendering quality and field of view coverage.
+                </p>
+            </div>
+        </div><br><br>
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2 text-center">
+                <h3>
+                    BoostMVSNeRFs gains higher rendering quality with more cost volumes.
+                </h3><br>
+                <image src="./static/images/progressive.png" width=90% style="display: block; margin: auto;"></image>
+                <br>
+                <p class="text-justify" style="width:85%; margin:auto">
+                    BoostMVSNeRFs boosts MVS-based NeRFs by selecting and combining multiple cost volumes during volume rendering. With more cost volumes, the rendering quality is improved, demonstrating the effectiveness of our method in enhancing the rendering quality of MVS-based NeRFs.
+                </p>
+            </div>
+        </div><br><br>
+
+        <!-- <div class="row">
+            <div class="col-md-8 col-md-offset-2 text-center">
+                <h3>
+                    BoostMVSNeRFs gains higher rendering quality with more cost volumes.
                 </h3><br>
 
                 <p class="text-justify" style="color:red"> Find one example for different number of cost volumes </p>
@@ -326,7 +348,7 @@
                     <video class="video" id="sparsity" loop playsinline autoPlay muted src="videos/Su2024Boost.mp4" onplay="resizeAndPlay(this)"></video>
                     <canvas height=0 class="videoMerge" id="sparsityMerge"></canvas>
                 </div>
-
+                
                 <div class="slider-container" style="padding-left: 12%; padding-right: 11%;">
                     <input type="range" class="styled-slider" id="sparsitySlider" min="0" max="3" step="1" value="0" list="slider-labels">
                     <datalist id="slider-labels">
@@ -350,9 +372,20 @@
                     BoostMVSNeRFs boosts MVS-based NeRFs by selecting and combining multiple cost volumes during volume rendering. With more cost volumes, the rendering quality is improved, demonstrating the effectiveness of our method in enhancing the rendering quality of MVS-based NeRFs.
                 </p>
             </div>
-        </div>
-        <br>
-        <br>
+        </div><br><br> -->
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3> BoostMVSNeRFs is robust with sparse input views </h3><br>
+                <canvas id="sparsityChart" style="max-height: 300px; max-width: 500px; margin: auto;"></canvas>
+                <script src="js/sparsity_chart.js"></script>
+                <br>
+                <p class="text-justify" style="color:red"> The statistics is currently assigned casually. We'll update it ASAP. </p>
+                <p class="text-center">
+                    With more sparse input views, the performance drop of our method is less severe than ENeRF, demonstrating the robustness of our method against sparse input views by combining multiple cost volumes in rendering.
+                </p>
+            </div>
+        </div><br><br>
 
         <div class="row">
             <div class="col-md-8 col-md-offset-2">

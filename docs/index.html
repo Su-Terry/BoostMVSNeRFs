@@ -178,8 +178,8 @@
         
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
-                <h3> BoostMVSNeRFs renders high-quality 3D scenes within 1 min </h3><br>
-                <p class="text-justify" style="text-align: center;">Here place the gradio demo.</p>
+                <h3> BoostMVSNeRFs renders high-quality 3D scenes in seconds </h3><br>
+                <p class="text-justify" style="color:red"> Here place the gradio demo. </p>
             </div>
         </div>
 
@@ -187,6 +187,9 @@
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
                 <h3> BoostMVSNeRFs outperforms Generalizable and Per-scene Optimization NeRFs </h3><br>
+
+                <p class="text-justify" style="color:red"> Only MVSNeRF, F2-NeRF, Zip-NeRF results. </p>
+                <p class="text-justify" style="color:red"> Depth image doesn't seem good. </p>
 
                 <div class="text-center ">
                     <ul class="nav nav-pills center-pills">
@@ -296,138 +299,55 @@
 
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
-                <h3> ReconFusion improves both few-view and many-view reconstruction </h3><br>
-                <!-- <p class="text-justify" style="color:red">
-                    Hover over the plot to show rendered video under different number of views.
-                </p> -->
+                <h3> BoostMVSNeRFs is robust with sparse input views </h3><br>
+                <p class="text-justify" style="color:red">
+                    The statistics is currently not correct. We will update it soon.
+                </p>
                 
                 <!-- top down layout -->
                 <canvas id="sparsityChart" style="max-height: 300px; max-width: 500px; margin: auto;"></canvas>
                 <script src="js/sparsity_chart.js"></script>
                 <br>
                 <p class="text-center">
-                    Our diffusion prior improves performance over baseline Zip-NeRF in both the few-view and many-view sampling regimes.
+                    With more sparse input views, the performance drop of our method is less severe than ENeRF, demonstrating the robustness of our method against sparse input views by combining multiple cost volumes in rendering.
                 </p>
-    
-                <div class="text-center">
-                    <div class="video-compare-container" id="materialsDiv">
-                        <video class="video" id="sparsity" loop playsinline autoPlay muted src="videos/sparsity/stacked_vid.mp4" onplay="resizeAndPlay(this)"></video>
-                        <canvas height=0 class="videoMerge" id="sparsityMerge"></canvas>
-                    </div>
-                    <!-- <canvas height=0 class="videoWrapper" id="sparsityVideoWrapper"></canvas> -->
-			<em>Move the slider to adjust the number of views. The left column shows the nearest input view.</em>
-                    <div class="slider-container" style="padding-left: 12%; padding-right: 11%;">
-                        <input type="range" class="styled-slider" id="sparsitySlider" min="0" max="6" step="1" value="0" list="slider-labels">
-                        <datalist id="slider-labels">
-                            <option value="0">3</option>
-                            <option value="1">6</option>
-                            <option value="2">9</option>
-                            <option value="3">18</option>
-                            <option value="4">27</option>
-                            <option value="5">54</option>
-                            <option value="6">81</option>
-                        </datalist>
-                    </div>
-                    <table style="text-align: left; padding-left: 0px; padding-right: 10%; width: 100%;">
-                        <tr>
-                            <th width="10%"></th>
-                            <td width="10%">3</td>
-                            <td width="10%">6</td>
-                            <td width="10%">9</td>
-                            <td width="10%">18</td>
-                            <td width="10%">27</td>
-                            <td width="10%">54</td>
-                            <td width="10%">81</td>
-                        </tr>
-                    </table><br>
-                    <!-- <div class="text-center">
-                        Rendered video under <span id="sparsityValue" style="color: red;">3</span> views
-                    </div> -->
-                </div>
-                
-                <!-- left right layout -->
-                <!-- <table style="width: 100%; border-collapse: collapse;">
-                    <tr>
-                      <td style="text-align: center;" >
-                        <canvas id="sparsityChart" style="max-height: 250px; max-width: 200px; margin: auto;"></canvas>
-                        <script src="js/sparsity_chart.js"></script>
-                      </td>
-                      <td style="text-align: center;">
-                        <video class="video" width=100% id="sparsityVideo" loop playsinline autoplay muted onplay="playOnCanvas(this, 180)">
-                            <source src="videos/sparsity/kitchenlego_3.mp4" type="video/mp4" />
-                        </video>
-                        <canvas height=0 class="videoWrapper" id="sparsityVideoWrapper"></canvas>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style="text-align: center;"></td>
-                      <td style="text-align: center;">Rendered video under <span id="sparsityValue" style="color: red;">3</span> views</td>
-                    </tr>
-                </table> -->
-<br>
             </div>
         </div><br><br>
 
         <div class="row">
             <div class="col-md-8 col-md-offset-2 text-center">
                 <h3>
-                    ReconFusion distills a consistent 3D model from inconsistent samples
+                    BoostMVSNeRFs is view consistent with more cost volumes
                 </h3><br>
-                
-                <table style="margin-left: auto; margin-right: auto; width: 90%;">
+
+                <p class="text-justify" style="color:red"> Find one example for different number of cost volumes </p>
+
+                <div class="video-compare-container" id="materialsDiv">
+                    <video class="video" id="sparsity" loop playsinline autoPlay muted src="videos/Su2024Boost.mp4" onplay="resizeAndPlay(this)"></video>
+                    <canvas height=0 class="videoMerge" id="sparsityMerge"></canvas>
+                </div>
+
+                <div class="slider-container" style="padding-left: 12%; padding-right: 11%;">
+                    <input type="range" class="styled-slider" id="sparsitySlider" min="0" max="3" step="1" value="0" list="slider-labels">
+                    <datalist id="slider-labels">
+                        <option value="0">1</option>
+                        <option value="1">2</option>
+                        <option value="2">3</option>
+                        <option value="3">4</option>
+                    </datalist>
+                </div>
+                <table style="text-align: left; padding-left: 0px; padding-right: 10%; width: 100%;">
                     <tr>
-                      <th style="width: 4%;"></th>
-                      <th style="text-align: center;width: 32%;">LLFF (3 views)</th>
-                      <th style="text-align: center;width: 32%;">CO3D (6 views)</th>
-					  <th style="text-align: center;width: 32%;">mip-NeRF 360 (9 views)</th>
+                        <th width="12.5%"></th>
+                        <th width="25%">1</th>
+                        <td width="25%">2</td>
+                        <td width="25%">3</td>
+                        <td width="25%">4</td>
                     </tr>
-                    <tr>
-                      <td style="text-align: center; writing-mode: vertical-lr; transform: rotate(180deg); width:4%">3D Reconstruction</td>
-                      <td rowspan="2" colspan="3" style="width: 96%">
-                        <video class="video" width=100% loop playsinline autoplay muted controls>
-                            <source src="videos/ablation/recon_vs_samples.mp4" />
-                        </video>
-                      </td>
-                      <!-- <td style="text-align: center;">
-                        <video class="video" width=100% loop playsinline autoplay muted style="max-height: 150px;">
-                            <source src="videos/ablation/z123_nerf.mp4" />
-                        </video>
-                      </td>
-                      <td style="text-align: center;">
-                        <video class="video" width=100% loop playsinline autoplay muted style="max-height: 150px;">
-                            <source src="videos/ablation/scratch_nerf.mp4" />
-                        </video>
-                      </td>
-                      <td style="text-align: center;">
-                        <video class="video" width=100% loop playsinline autoplay muted style="max-height: 150px;">
-                            <source src="videos/ablation/ours_nerf.mp4" />
-                        </video>
-                      </td> -->
-                    </tr>
-                    <tr>
-					  <td style="text-align: center; writing-mode: vertical-lr; transform: rotate(180deg); width:4%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Samples&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td></td>
-                      <!-- <td style="text-align: center;">
-                        <video class="video" width=100% loop playsinline autoplay muted style="max-height: 150px;">
-                            <source src="videos/ablation/z123_samples.mp4" />
-                        </video>
-                      </td>
-                      <td style="text-align: center;">
-                        <video class="video" width=100% loop playsinline autoplay muted style="max-height: 150px;">
-                            <source src="videos/ablation/scratch_samples.mp4" />
-                        </video>
-                      </td>
-                      <td style="text-align: center;">
-                        <video class="video" width=100% loop playsinline autoplay muted style="max-height: 150px;">
-                            <source src="videos/ablation/ours_samples.mp4" />
-                        </video>
-                      </td> -->
-                    </tr>
-                </table>
+                </table><br>
                 <br>
-<!-- 
-                <p class="text-justify" style="width: 85%; margin: auto;"> -->
                 <p class="text-justify" style="width:85%; margin:auto">
-                    ReconFusion recovers consistent 3D reconstructions (top) from a diffusion model that produces image samples independently for each viewpoint (bottom). These samples are not multiview consistent, but can produce high-quality 3D reconstructions when used as a prior in optimization.
+                    BoostMVSNeRFs boosts MVS-based NeRFs by selecting and combining multiple cost volumes during volume rendering. With more cost volumes, the rendering quality is improved, demonstrating the effectiveness of our method in enhancing the rendering quality of MVS-based NeRFs.
                 </p>
             </div>
         </div>

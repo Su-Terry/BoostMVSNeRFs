@@ -16,9 +16,9 @@ function playVids(videoId, container, targetHeight = 2000) {
         var vidWidthOrig = vid.videoWidth;
         var vidHeightOrig = vid.videoHeight;
         var vidWidth = container.width();
-        var vidHeight = vidWidth * vidHeightOrig / vidWidthOrig / 7;
+        var vidHeight = vidWidth * vidHeightOrig / vidWidthOrig / 4;
   
-        mergeContext.drawImage(vid, 0, slider.value * vidHeightOrig / 7, vidWidthOrig, vidHeightOrig / 7, 0, 0, vidWidth, vidHeight);
+        mergeContext.drawImage(vid, 0, slider.value * vidHeightOrig / 4, vidWidthOrig, vidHeightOrig / 4, 0, 0, vidWidth, vidHeight);
         requestAnimationFrame(drawLoop);
   
   
@@ -42,7 +42,7 @@ function playVids(videoId, container, targetHeight = 2000) {
   
     function resizerbin() {
       const videoWidth = videoElement.videoWidth;
-      const videoHeight = videoElement.videoHeight / 7;
+      const videoHeight = videoElement.videoHeight / 4;
       const canvasWidth = container.width();
       const canvasHeight = canvasWidth * videoHeight / videoWidth;
       canvas.width = canvasWidth;

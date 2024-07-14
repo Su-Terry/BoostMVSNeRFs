@@ -1,5 +1,5 @@
 let lastHoveredxLabel = null;
-const xValues = [3, 6, 9, 18, 27, 54, 81];
+const xValues = [25, 37.5, 50, 62.5, 75];
 
 new Chart("sparsityChart", {
     type: "line",
@@ -7,8 +7,8 @@ new Chart("sparsityChart", {
         labels: xValues,
         datasets: [
             { 
-                label: 'Ours',
-                data: [16.15, 17.83, 19.76, 23.07, 24.55, 26.51, 27.28],
+                label: 'ENeRF+ours',
+                data: [23.5, 24.3, 25.6, 26.1, 26.35],
                 borderColor: "#66b266",
                 backgroundColor: '#329932',
                 fill: false,
@@ -16,8 +16,8 @@ new Chart("sparsityChart", {
                 pointRadius: 5,
             },
             { 
-                label: 'Zip-NeRF',
-                data: [12.0, 13.48, 15.27, 18.75, 21.05, 24.05, 25.43],
+                label: 'ENeRF',
+                data: [21.8, 22.7, 25, 25.05, 26.05],
                 borderColor: "#a6a6a6",
                 backgroundColor: '#8c8c8c',
                 fill: false,
@@ -39,7 +39,7 @@ new Chart("sparsityChart", {
             xAxes: [{
               scaleLabel: {
                 display: true,
-                labelString: 'Number of views'
+                labelString: '% of input views'
               }
             }]
         },

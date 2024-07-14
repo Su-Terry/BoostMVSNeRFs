@@ -60,15 +60,12 @@
 
 </head>
 
-<body style="padding: 5%; width: 100%">
+<body style="padding: 1%; width: 100%">
     <div class="container-lg text-center" style="max-width: 1500px; margin: auto;" id="main">
     <!-- <div class="container" id="main"> -->
         <div class="row">
             <h2 class="col-md-12 text-center">
                 <b>BoostMVSNeRFs</b>: Boosting MVS-based NeRFs to Generalizable View Synthesis in Large-scale Scenes
-            </h2>
-            <h2 class="col-md-12 text-center">
-                <b>SIGGRAPH 2024</b>
             </h2>
         </div>
         <div class="row text-center">
@@ -77,28 +74,28 @@
             <div class="col-md-6 text-center">
                 <ul class="list-inline">
                     <li>
-                        <a href="https://su-terry.github.io/BoostMVSNeRFs/">
+                        <a href="https://su-terry.github.io/">
                             Chih-Hai Su
                         </a><sup>1</sup>*
                     </li>
                     <li>
-                        <a href="https://su-terry.github.io/BoostMVSNeRFs/">
+                        <a href="https://orcid.org/0009-0008-5968-6322">
                             Chih-Yao Hu
                         </a><sup>2</sup>*
                     </li>
                     <li>
-                        <a href="https://su-terry.github.io/BoostMVSNeRFs/">
+                        <a href="https://orcid.org/0009-0002-2707-0095">
                             Shr-Ruei Tsai
                         </a><sup>1</sup>*
                     </li>
                     <li>
-                        <a href="https://su-terry.github.io/BoostMVSNeRFs/">
+                        <a href="https://orcid.org/0009-0008-0826-4664">
                             Jie-Ying Lee
                         </a><sup>1</sup>*
                     </li>
                     <wbr>
                     <li>
-                        <a href="https://su-terry.github.io/BoostMVSNeRFs/">
+                        <a href="https://orcid.org/0009-0007-1945-2014">
                             Chin-Yang Lin
                         </a><sup>1</sup>
                     </li>
@@ -112,76 +109,45 @@
 <div class="col-md-3">
     </div>
             <div class="col-md-12 text-center">
-                <sup>1</sup>National Yang Ming Chiao Tung University, &nbsp <sup>2</sup>National Taiwan University, &nbsp
+                <sup>1</sup>National Yang Ming Chiao Tung University, &nbsp <sup>2</sup>National Taiwan University, &nbsp; * equal contribution
 
             </div>
             <div class="col-md-12 text-center">
-                * equal contribution
+                SIGGRAPH 2024
             </div> </div>
 
 
         <div class="row text-center">
-					
 			<span class="link-block">
-                <a href="https://arxiv.org/abs/2312.02981"
+                <a href="https://arxiv.org/abs/XXXX.XXXXX"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="ai ai-arxiv"></i>
                   </span>
                   <span>arXiv</span>
                 </a>
-            </span>
-            <!-- Code Link. -->
-            <span class="link-block">
                 <a href="https://github.com/Su-Terry/BoostMVSNeRFs"
                     class="external-link button is-normal is-rounded is-dark">
-                <span class="icon">
-                    <i class="fab fa-github"></i>
-                </span>
-                <span>Code</span>
+                    <span class="icon">
+                        <i class="fab fa-github"></i>
+                    </span>
+                    <span>Code</span>
+                </a>
+                <a href="https://drive.google.com/drive/folders/1u8njbeysuBgLihxmpGRY5vePm1aacfPi?usp=sharing"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="far fa-images"></i>
+                  </span>
+                  <span>Data</span>
                 </a>
             </span>
-			</div>
-
+		</div>
 
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
                 <video id="teaser-video-ours" width="100%" autoplay loop muted controls>
-                  <source src="videos/teaser/wipe_4.mp4" type="video/mp4" />
+                  <source src="videos/Su2024Boost.mp4" type="video/mp4" />
                 </video>
-<!-- 
-                <video id="teaser-video-ours" width="100%" autoplay loop muted>
-                  <source src="videos/teaser/grid_ours.mp4" type="video/mp4" />
-                </video>
-                <video id="teaser-video-zipenrf" width="100%" autoplay loop muted hidden>
-                  <source src="videos/teaser/grid_zipnerf.mp4" type="video/mp4" />
-                </video>
-
-                <div class="switch-container-wrapper">
-                    <div class="switch-container">
-                        <span class="switch-label">Ours</span>
-                        <label class="switch">
-                            <input type="checkbox" id="teaserVideoSwitch" onclick="selectTeaserVideo()">
-                            <div class="slider round"></div>
-                        </label>
-                        <span class="switch-label">Zip-NeRF</span>
-                    </div>
-                </div>
-                <script>
-                    function selectTeaserVideo() {
-                      var video_ours = document.getElementById("teaser-video-ours");
-                      var video_zipnerf = document.getElementById("teaser-video-zipenrf");
-                      var videoSwitch = document.getElementById("teaserVideoSwitch");
-                      if (videoSwitch.checked) {
-                        video_zipnerf.hidden = false;
-                        video_ours.hidden = true;
-                      } else {
-                        video_zipnerf.hidden = true;
-                        video_ours.hidden = false;
-                      }
-                    }
-                </script>
- -->
 			</div>
         </div>
 
@@ -202,7 +168,6 @@
             <div class="col-md-8 col-md-offset-2">
                 <h3>
                     <b>BoostMVSNeRFs</b>
-				  <!-- <b> <font color="#118ab2">Recon</font><font color="#ef486e">Fusion</font></b> = <font color="#118ab2">3D Reconstruction</font>  + <font color="#ef486e">Diffusion Prior</font> -->
                 </h3>
                 <image src="./static/images/teaser.png" width=90% style="display: block; margin: auto;"></image>
                 <p class="text-justify">
@@ -210,39 +175,25 @@
                 </p>
             </div>
         </div><br><br>
-	<div class="row">
-		<div class="col-md-8 col-md-offset-2">
-		<h3> ReconFusion enables high-quality 3D reconstruction from few views</h3><br>
-                <video id="co3d-grid" width="100%" autoplay loop muted controls>
-                  <source src="videos/results/co3d_3x5.mp4" type="video/mp4" />
-                </video>
-                <br>
-                    <p class="text-justify" style="text-align: center;">ReconFusion generalizes to everyday scenes: the same diffusion model prior is used for <b>all</b> reconstruction results.</p>
-			</div>
+        
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3> BoostMVSNeRFs renders high-quality 3D scenes within 1 min </h3><br>
+                <p class="text-justify" style="text-align: center;">Here place the gradio demo.</p>
+            </div>
         </div>
-
 
         <br>
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
-                <h3>
-				  ReconFusion outperforms other few-view NeRF methods
-                </h3><br>
+                <h3> BoostMVSNeRFs outperforms Generalizable and Per-scene Optimization NeRFs </h3><br>
 
                 <div class="text-center ">
                     <ul class="nav nav-pills center-pills">
-                        <li class="method-pill active" data-value="zipnerf"
-                            onclick="selectCompVideo(this, activeScenePill)"><a>Zip-NeRF</a></li>
-                        <li class="method-pill" data-value="diffusionerf"
-                            onclick="selectCompVideo(this, activeScenePill)"><a>DiffusioNeRF</a></li>
-                    </ul>
-                    <ul class="nav nav-pills center-pills">
-                        <li class="method-pill" data-value="freenerf"
-                            onclick="selectCompVideo(this, activeScenePill)"><a>FreeNeRF</a></li>
-                        <li class="method-pill" data-value="simplenerf"
-                            onclick="selectCompVideo(this, activeScenePill)"><a>SimpleNeRF</a></li>
-                        <li class="method-pill" data-value="zeronvs"
-                            onclick="selectCompVideo(this, activeScenePill)"><a>ZeroNVS</a></li>
+                        <li class="method-pill" data-value="mvsnerf"
+                            onclick="selectCompVideo(this, activeScenePill)"><a>MVSNeRF</a></li>
+                        <li class="method-pill active" data-value="enerf"
+                            onclick="selectCompVideo(this, activeScenePill)"><a>ENeRF</a></li>
                     </ul>
                 </div>
 
@@ -255,10 +206,10 @@
                 <div class="text-center">
                     <div class="video-container">
                         <video class="video" style="height: 280px; max-width: 100%;" m id="compVideo0" loop playsinline autoplay muted>
-                            <source src="videos/comparison/mipnerf360_bonsai_zipnerf_vs_ours_rgb.mp4" />
+                            <source src="videos/comparison/free_road_enerf_vs_ours_rgb.mp4"/>
                         </video>
                         <video class="video" style="height: 280px; max-width: 100%;" id="compVideo1" loop playsinline autoplay muted hidden>
-                            <source src="videos/comparison/mipnerf360_bonsai_zipnerf_vs_ours_depth.mp4" />
+                            <source src="videos/comparison/free_road_enerf_vs_ours_depth.mp4"/>
                         </video>
                     </div>
                     <div class="text-center" style="color: black;" id="mode-pills">
@@ -277,7 +228,7 @@
 
                     <br>
                     <p class="text-justify" style="text-align: center;">
-                        Baseline method (left) vs ReconFusion (right). Scene trained on <span id="compVideoValue">9</span> views. Try selecting different methods and scenes!
+                        Baseline method (left) vs BoostMVSNeRFs (right).
                     </p>
                     <script>
                         video0 = document.getElementById("compVideo0");
@@ -303,35 +254,26 @@
                     </script>
 
                     <div class="pill-row scene-pills" id="scene-pills">
-                        <span class="pill scene-pill" data-value="dtu_scan31" onclick="selectCompVideo(activeMethodPill, this, 3)">
-                            <img class="thumbnail-img" src="thumbnails/dtu_scan31_thumbnail.jpg" alt="DTU/scan31" width="64">
+                        <span class="pill scene-pill" data-value="free_grass" onclick="selectCompVideo(activeMethodPill, this)">
+                            <img class="thumbnail-img" src="static/thumbnails/free_grass.jpg" alt="Free/grass" width="64">
                         </span>
-                        <span class="pill scene-pill" data-value="dtu_scan45" onclick="selectCompVideo(activeMethodPill, this, 3)">
-                            <img class="thumbnail-img" src="thumbnails/dtu_scan45_thumbnail.jpg" alt="DTU/scan45" width="64">
+                        <span class="pill scene-pill" data-value="free_hydrant" onclick="selectCompVideo(activeMethodPill, this)">
+                            <img class="thumbnail-img" src="static/thumbnails/free_hydrant.jpg" alt="Free/hydrant" width="64">
                         </span>
-                        <span class="pill scene-pill" data-value="llff_fern" onclick="selectCompVideo(activeMethodPill, this, 3)">
-                            <img class="thumbnail-img" src="thumbnails/llff_fern_thumbnail.jpg" alt="LLFF/fern" width="64">
+                        <span class="pill scene-pill" data-value="free_lab" onclick="selectCompVideo(activeMethodPill, this)">
+                            <img class="thumbnail-img" src="static/thumbnails/free_lab.jpg" alt="Free/lab" width="64">
                         </span>
-                        <span class="pill scene-pill" data-value="llff_horns" onclick="selectCompVideo(activeMethodPill, this, 3)">
-                            <img class="thumbnail-img" src="thumbnails/llff_horns_thumbnail.jpg" alt="LLFF/horns" width="64">
+                        <span class="pill scene-pill" data-value="free_pillar" onclick="selectCompVideo(activeMethodPill, this)">
+                            <img class="thumbnail-img" src="static/thumbnails/free_pillar.jpg" alt="Free/pillar" width="64">
                         </span>
-                        <span class="pill scene-pill" data-value="re10k_00e8df74b6805da7" onclick="selectCompVideo(activeMethodPill, this, 3)">
-                            <img class="thumbnail-img" src="thumbnails/re10k_00e8df74b6805da7_thumbnail.jpg" alt="Re10K/sofa" width="64">
+                        <span class="pill scene-pill active" data-value="free_road" onclick="selectCompVideo(activeMethodPill, this)">
+                            <img class="thumbnail-img" src="static/thumbnails/free_road.jpg" alt="Free/road" width="64">
                         </span>
-                        <span class="pill scene-pill" data-value="re10k_000c3ab189999a83" onclick="selectCompVideo(activeMethodPill, this, 3)">
-                            <img class="thumbnail-img" src="thumbnails/re10k_000c3ab189999a83_thumbnail.jpg" alt="Re10K/living room" width="64">
+                        <span class="pill scene-pill" data-value="free_sky" onclick="selectCompVideo(activeMethodPill, this)">
+                            <img class="thumbnail-img" src="static/thumbnails/free_sky.jpg" alt="Free/sky" width="64">
                         </span>
-                        <span class="pill scene-pill" data-value="co3d_bench_185_19987_38634" onclick="selectCompVideo(activeMethodPill, this, 6)">
-                            <img class="thumbnail-img" src="thumbnails/co3d_bench_185_19987_38634_thumbnail.jpg" alt="CO3D/bench" width="64">
-                        </span>
-                        <span class="pill scene-pill" data-value="co3d_plant_188_20319_36755" onclick="selectCompVideo(activeMethodPill, this, 6)">
-                            <img class="thumbnail-img" src="thumbnails/co3d_plant_188_20319_36755_thumbnail.jpg" alt="CO3D/plant" width="64">
-                        </span>
-                        <span class="pill scene-pill active" data-value="mipnerf360_bonsai" onclick="selectCompVideo(activeMethodPill, this, 9)">
-                            <img class="thumbnail-img" src="thumbnails/mipnerf360_bonsai_thumbnail.jpg" alt="mip-NeRF 360/bonsai" width="64">
-                        </span>
-                        <span class="pill scene-pill" data-value="mipnerf360_kitchen" onclick="selectCompVideo(activeMethodPill, this, 9)">
-                            <img class="thumbnail-img" src="thumbnails/mipnerf360_kitchen_thumbnail.jpg" alt="mip-NeRF 360/kitchen" width="64">
+                        <span class="pill scene-pill" data-value="free_stair" onclick="selectCompVideo(activeMethodPill, this)">
+                            <img class="thumbnail-img" src="static/thumbnails/free_stair.jpg" alt="Free/stair" width="64">
                         </span>
                     </div>
 
@@ -348,9 +290,7 @@
 
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
-                <h3>
-				  ReconFusion improves both few-view and many-view reconstruction
-                </h3><br>
+                <h3> ReconFusion improves both few-view and many-view reconstruction </h3><br>
                 <!-- <p class="text-justify" style="color:red">
                     Hover over the plot to show rendered video under different number of views.
                 </p> -->
@@ -496,7 +436,8 @@
                 <div class="form-group col-md-10 col-md-offset-1">
 				  <p class="text-justify">
                     <textarea id="bibtex" class="form-control" readonly>
-        </textarea></p>
+                        Arxiv/Citation
+                        </textarea></p>
                 </div>
             </div>
         </div>
@@ -507,7 +448,10 @@
                     Acknowledgements
                 </h3>
                 <p class="text-justify">
-                We appreciate Yu-Lun Liu.
+                  This research was funded by the National Science and Technology Council, Taiwan, under Grants NSTC 112-2222-E-A49-004-MY2.
+                  The authors are grateful to Google and NVIDIA for generous donations.
+                  Yu-Lun Liu acknowledges the Yushan Young Fellow Program by the MOE in Taiwan.
+                  The authors thank the anonymous reviewers for their valuable feedback.
                     <br><br>
                 The website template was borrowed from <a href="http://mgharbi.com/">Michaël Gharbi</a> and <a href="https://dorverbin.github.io/refnerf">Ref-NeRF</a>.
                 </p>
@@ -516,242 +460,3 @@
     </div>
 </body>
 </html>
-
-<!-- <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="description"
-        content="BoostMVSNeRFs: Boosting MVS-based NeRFs to Generalizable View Synthesis in Large-scale Scenes">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>BoostMVSNeRFs</title>
-
-  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
-        rel="stylesheet">
-
-  <link rel="stylesheet" href="./static/css/bulma.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
-  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
-  <link rel="stylesheet" href="./static/css/index.css">
-  <link rel="icon" href="./static/images/icon.png">
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script defer src="./static/js/fontawesome.all.min.js"></script>
-  <script src="./static/js/bulma-carousel.min.js"></script>
-  <script src="./static/js/bulma-slider.min.js"></script>
-  <script src="./static/js/index.js"></script>
-</head>
-<body>
-
-<nav class="navbar" role="navigation" aria-label="main navigation">
-  <div class="navbar-brand">
-    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-    </a>
-  </div>
-</nav>
-
-
-<section class="hero">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <div class="columns is-centered">
-        <div class="column has-text-centered">
-          <h1 class="title is-3 publication-title">BoostMVSNeRFs: Boosting MVS-based NeRFs to Generalizable View Synthesis in Large-scale Scenes</h1>
-          <h1 class="title is-4 publication-conference"> SIGGRAPH 2024 </h1>
-          <div class="is-size-6 publication-authors">
-            <span class="author-block">
-              <a href="https://su-terry.github.io/BoostMVSNeRFs/">Chih-Hai Su</a><sup>1*</sup>,</span>
-            <span class="author-block">
-              <a href="https://su-terry.github.io/BoostMVSNeRFs/">Chih-Yao HU</a><sup>2*</sup>,</span>
-            <span class="author-block">
-              <a href="https://su-terry.github.io/BoostMVSNeRFs/">Shr-Ruei Tsai</a><sup>1*</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://su-terry.github.io/BoostMVSNeRFs/">Jie-Ying Lee</a><sup>1*</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://su-terry.github.io/BoostMVSNeRFs/">Chin-Yang Lin</a><sup>1</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://www.cmlab.csie.ntu.edu.tw/~yulunliu/">Yu-Lun Liu</a><sup>1†</sup>,
-            </span>
-          </div>
-
-          <div class="is-size-6 publication-authors">
-            <span class="author-block"><sup>1</sup>National Yang Ming Chiao Tung University,</span>
-            <span class="author-block"><sup>2</sup>National Taiwan University,</span>
-            <span class="author-block"><sup>*</sup>Equal contribution</span>
-          </div>
-
-          <div class="column has-text-centered">
-            <div class="publication-links">
-              <span class="link-block">
-                <a href="https://arxiv.org/pdf/24XX.XXXXX.pdf"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fas fa-file-pdf"></i>
-                  </span>
-                  <span>Paper</span>
-                </a>
-              </span>
-              <span class="link-block">
-                <a href="https://arxiv.org/pdf/24XX.XXXXX"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="ai ai-arxiv"></i>
-                  </span>
-                  <span>arXiv</span>
-                </a>
-              </span>
-              <span class="link-block">
-                <a href="https://github.com/Su-Terry/BoostMVSNeRFs"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-github"></i>
-                  </span>
-                  <span>Code</span>
-                  </a>
-              </span>
-            </div>
-
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="hero teaser">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <video id="comparison" controls autoplay muted loop control height width="100%">
-        <source src="./static/videos/teaser.mp4"
-                      type="video/mp4">
-      </video>
-      <div class="content has-text-centered">
-          <p>
-            @Shifeng Park. Trained for ~47 minutes on a single Nvidia GPU.
-          </p>
-        </div>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-4">Abstract</h2>
-        <div class="content has-text-justified">
-          <p>
-            While Neural Radiance Fields (NeRFs) have demonstrated exceptional quality, their protracted training duration remains a limitation. Generalizable and MVS-based NeRFs, although capable of mitigating training time, often incur tradeoffs in quality. This paper presents a novel approach called BoostMVSNeRFs to enhance the rendering quality of MVS-based NeRFs in large-scale scenes. We first identify limitations in MVS-based NeRF methods, such as restricted viewport coverage and artifacts due to limited input views. Then, we address these limitations by proposing a new method that selects and combines multiple cost volumes during volume rendering. Our method does not require training and can adapt to any MVS-based NeRF methods in a feed-forward fashion to improve rendering quality. Furthermore, our approach is also end-to-end trainable, allowing fine-tuning on specific scenes. We demonstrate the effectiveness of this method through experiments on large-scale datasets, showing significant improvements in rendering quality, particularly in large-scale scenes with free camera trajectories and unbounded outdoor scenarios.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-4">Framework</h2>
-        <img src='./static/images/teaser.png'></img>
-        <div class="content has-text-justified">
-          <p>Our BoostMVSNeRFs enhances the novel view synthesis quality of MVS-based NeRFs in large-scale scenes. MVS-based NeRF methods often suffer from (a) limited viewport coverage from novel views or (b) artifacts due to limited input views for constructing cost volumes. (c) These drawbacks cannot be resolved even by per-scene fine-tuning. Our approach selects those cost volumes that contribute the most to the novel view and combines multiple selected cost volumes with volume rendering. (d, e) Our method does not require any training and is compatible with existing MVS-based NeRFs in a feed-forward fashion to improve the rendering quality. (f) The scene can be further fine-tuned as our method supports end-to-end fine-tuning. </p>
-        </div>
-      </div>
-    </div>
-
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-full-width">
-        <h2 class="title is-4">Comparisons</h2>
-        <div class="columns is-centered">
-          <div class="column content">
-            <video id="comparison" controls muted loop control height width="100%">
-              <source src="./static/videos/comparison.mp4"
-                      type="video/mp4">
-            </video>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-full-width">
-        <h2 class="title is-4">More results</h2>
-        <div class="content is-centered has-text-centered">
-          <p>(Description Here)</p>
-        </div>
-        <div class="columns is-centered">
-          <div class="column content">
-            <video id="comparison" controls muted loop control height width="100%">
-              <source src="./static/videos/result_4.mp4"
-                      type="video/mp4">
-            </video>
-          </div>
-          <div class="column content">
-            <video id="comparison" controls muted loop control height width="100%">
-              <source src="./static/videos/result_1.mp4"
-                      type="video/mp4">
-            </video>
-          </div>
-        </div>
-        </div>
-      </div>
-    </div>
-
-
-    <div class="columns is-centered">
-      <div class="column is-full-width">
-        <h2 class="title is-4">Acknowledgement</h2>
-        <div class="content has-text-justified">
-          <p>
-            We appreciate Yu-Lun Liu.
-          </p>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-
-<section class="section" id="BibTeX">
-  <div class="container is-max-desktop content">
-    <h2 class="title">BibTeX</h2>
-    <pre><code></code></pre>
-  </div>
-</section>
-
-
-<footer class="footer">
-  <div class="container">
-    <div class="columns is-centered">
-      <div class="column is-8">
-        <div class="content">
-          <p>
-            This website is licensed under a <a rel="license"
-                                                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
-            Commons Attribution-ShareAlike 4.0 International License</a>.
-          </p>
-          <p>
-            The source code of the website is borrowed from <a
-              href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</footer>
-
-</body>
-</html> -->

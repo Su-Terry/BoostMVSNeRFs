@@ -9,11 +9,3 @@ __pycache__/
 *.pth
 *.npy
 *.ipynb
-*.png
-*.jpg
-
-*_new/
-
-# Rendering Videos files
-*video
-*video.py

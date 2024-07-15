@@ -10,8 +10,8 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <meta property="og:image" content="./static/images/teaser.png">
-    <meta property="og:image:type" content="image/png">
+    <meta property="og:image" content="./static/images/teaser.jpg">
+    <meta property="og:image:type" content="image/jpg">
     <meta property="og:image:width" content="1711">
     <meta property="og:image:height" content="576">
     <meta property="og:type" content="website" />
@@ -22,7 +22,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="BoostMVSNeRFs: Boosting MVS-based NeRFs to Generalizable View Synthesis in Large-scale Scenes" />
     <meta name="twitter:description" content="3D reconstruction methods such as Neural Radiance Fields (NeRFs) excel at rendering photorealistic novel views of complex scenes. However, recovering a high-quality NeRF typically requires tens to hundreds of input images, resulting in a time-consuming capture process. We present ReconFusion to reconstruct real-world scenes using only a few photos. Our approach leverages a diffusion prior for novel view synthesis, trained on synthetic and multiview datasets, which regularizes a NeRF-based 3D reconstruction pipeline at novel camera poses beyond those captured by the set of input images. Our method synthesizes realistic geometry and texture in underconstrained regions while preserving the appearance of observed regions. We perform an extensive evaluation across various real-world datasets, including forward-facing and 360-degree scenes, demonstrating significant performance improvements over previous few-view NeRF reconstruction approaches."/>
-    <meta name="twitter:image" content="./static/images/teaser.png" />
+    <meta name="twitter:image" content="./static/images/teaser.jpg" />
 
 
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤔</text></svg>">
@@ -102,7 +102,7 @@
                     <li>
                         <a href="https://yulunalexliu.github.io/">
                             Yu-Lun Liu
-                        </a><sup>1</sup>†
+                        </a><sup>1</sup>
                     </li>
                 </ul>
             </div>
@@ -174,7 +174,7 @@
                 <h3>
                     <b>BoostMVSNeRFs</b>
                 </h3>
-                <image src="./static/images/teaser.png" width=90% style="display: block; margin: auto;"></image>
+                <image src="./static/images/teaser.jpg" width=90% style="display: block; margin: auto;"></image>
                 <p class="text-justify">
                     <b>Our BoostMVSNeRFs enhances the novel view synthesis quality of MVS-based NeRFs in large-scale scenes.</b> MVS-based NeRF methods often suffer from (a) limited viewport coverage from novel views or (b) artifacts due to limited input views for constructing cost volumes. (c) These drawbacks cannot be resolved even by per-scene fine-tuning. Our approach selects those cost volumes that contribute the most to the novel view and combines multiple selected cost volumes with volume rendering. (d, e) Our method does not require any training and is compatible with existing MVS-based NeRFs in a feed-forward fashion to improve the rendering quality. (f) The scene can be further fine-tuned as our method supports end-to-end fine-tuning.
                 </p>
@@ -193,7 +193,7 @@
             <div class="col-md-8 col-md-offset-2">
                 <h3> BoostMVSNeRFs outperforms Generalizable and Per-scene Optimization NeRFs </h3><br>
 
-                <p class="text-justify" style="color:red"> No MVSNeRF, F2-NeRF, Zip-NeRF results. Depth images seem bad. </p>
+                <p class="text-justify" style="color:red"> No MVSNeRF rgb. Depth images seem bad. </p>
 
                 <div class="text-center ">
                     <ul class="nav nav-pills center-pills">
@@ -302,10 +302,10 @@
                 <h3>
                     Nice rendering equation: Combining CV1 (left) & CV2 (right)
                 </h3><br>
-                <image src="./static/images/combined_rendering.png" width=60% style="display: block; margin: auto;"></image>
+                <image src="./static/images/combined_rendering.jpg" width=60% style="display: block; margin: auto;"></image>
                 <br>
                 <p class="text-justify" style="width:85%; margin:auto">
-                    Using a single cost volume, as in traditional MVS-based NeRFs, often introduces padding artifacts or incorrect geometry, as indicated by the \textcolor{red}{\textbf{red}} dashed circles. Our method warps selected cost volumes to the novel view's frustum and applies 3D visibility scores $m_j$ as weights to blend multiple cost volumes during volume rendering. Combined rendering provides broader viewport coverage and combines information from multiple cost volumes, leading to improved image synthesis and alleviating artifacts.
+                    Using a single cost volume, as in traditional MVS-based NeRFs, often introduces padding artifacts or incorrect geometry, as indicated by the <span style="color:red; font-weight:bold;">red</span> dashed circles. Our method warps selected cost volumes to the novel view's frustum and applies 3D visibility scores <em>m<sub>j</sub></em> as weights to blend multiple cost volumes during volume rendering. Combined rendering provides broader viewport coverage and combines information from multiple cost volumes, leading to improved image synthesis and alleviating artifacts.
                 </p>
             </div>
         </div><br><br>
@@ -315,10 +315,10 @@
                 <h3>
                     3D visibility scores and 2D visibility masks.
                 </h3><br>
-                <image src="./static/images/visibility_mask.png" width=60% style="display: block; margin: auto;"></image>
+                <image src="./static/images/visibility_mask.jpg" width=60% style="display: block; margin: auto;"></image>
                 <br>
                 <p class="text-justify" style="width:85%; margin:auto">
-                    For a novel view, depth distribution is estimated from three input views, from which 3D points are sampled and projected onto each view to determine visibility. These projections yield 3D visibility scores $m_j$, normalized across the views, and are subsequently volume rendered into a 2D visibility mask $\textbf{M}^{\text{2D}}$. This mask highlights the contribution of each input view to the cost volume and guides the rendering process, aiding in the selection of input views that optimize rendering quality and field of view coverage.
+                    For a novel view, depth distribution is estimated from three input views, from which 3D points are sampled and projected onto each view to determine visibility. These projections yield 3D visibility scores <em>m<sub>j</sub></em>, normalized across the views, and are subsequently volume rendered into a 2D visibility mask <strong>M<sup>2D</sup></strong>. This mask highlights the contribution of each input view to the cost volume and guides the rendering process, aiding in the selection of input views that optimize rendering quality and field of view coverage.
                 </p>
             </div>
         </div><br><br>
@@ -328,7 +328,7 @@
                 <h3>
                     BoostMVSNeRFs gains higher rendering quality with more cost volumes.
                 </h3><br>
-                <image src="./static/images/progressive.png" width=90% style="display: block; margin: auto;"></image>
+                <image src="./static/images/progressive.jpg" width=90% style="display: block; margin: auto;"></image>
                 <br>
                 <p class="text-justify" style="width:85%; margin:auto">
                     BoostMVSNeRFs boosts MVS-based NeRFs by selecting and combining multiple cost volumes during volume rendering. With more cost volumes, the rendering quality is improved, demonstrating the effectiveness of our method in enhancing the rendering quality of MVS-based NeRFs.

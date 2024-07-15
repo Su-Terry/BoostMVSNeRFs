@@ -130,8 +130,11 @@ bash scripts/exps/evaluate/free_ft.sh mvsnerf      grass
 bash scripts/exps/evaluate/free_ft.sh mvsnerf_ours grass
 ```
 
-<!-- Fine-tuning for 11000 iterations takes about 90 minutes, on our test machine ( ? CPU, RTX 4090 GPU). -->
-
+## Run BoostMVSNeRFs on your custom data
+Make sure your video is at `$workspace/custom/video.mp4`
+```bash
+bash scripts/custom.sh
+```
 
 ## Citation
 

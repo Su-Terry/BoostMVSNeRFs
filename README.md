@@ -131,7 +131,12 @@ bash scripts/exps/evaluate/free_ft.sh mvsnerf_ours grass
 ```
 
 ## Run BoostMVSNeRFs on your custom data
-Make sure your video is at `$workspace/custom/video.mp4`
+Place your photos of each viewport in the `$workspace/custom/` directory. If you have recorded the scene as a video, run `python scripts/mp4toimgs.py <your_video.mp4>` to generate the frames.
+
+Next, we recommend using the imgs2poses.py script from the [LLFF](https://github.com/Fyusion/LLFF/tree/master) code.
+
+Finally, run this script to generate a novel-view video.
+
 ```bash
 bash scripts/custom.sh
 ```

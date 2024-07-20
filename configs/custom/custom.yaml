@@ -1,0 +1,23 @@
+parent_cfg: configs/exps/evaluate/enerf_ours/free_eval.yaml
+save_tag: custom
+
+enerf:
+    test_input_views: 12
+    cas_config:
+        k_best: 12
+
+dataset_module: lib.datasets.custom.enerf_base
+
+train_dataset:
+    data_root: 'custom' #
+    split: 'train'
+    input_h_w: [480, 640]
+    batch_size: 1
+    input_ratio: 1.
+
+test_dataset:
+    data_root: 'custom' #
+    split: 'test'
+    input_h_w: [480, 640]
+    batch_size: 1
+    input_ratio: 1.

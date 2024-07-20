@@ -10,4 +10,7 @@ __pycache__/
 *.npy
 *.ipynb
 
+# Development
 docs/videos/free/
+video/
+*_video.py

@@ -1,5 +1,5 @@
-task: mvsnerf_ft
-parent_cfg: configs/exps/evaluate/mvsnerf/free_eval.yaml
+task: mvsnerf_ours_ft
+parent_cfg: configs/exps/evaluate/mvsnerf_ours/free_eval.yaml
 
 enerf:
   cas_config:

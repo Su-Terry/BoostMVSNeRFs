@@ -12,8 +12,8 @@ class Network(network.Network):
         super(Network, self).__init__()
                 
         if not preprocess:
-            view_selection_file = os.path.join(cfg.result_dir, f'view_selection.json')
             # View selection should be preprocessed.
+            view_selection_file = os.path.join(cfg.result_dir, f'view_selection.json')
             if not os.path.exists(view_selection_file):
                 raise "View selection file not found. Please run view selection first."
             with open(view_selection_file, 'r') as f:
@@ -134,10 +134,8 @@ class Network(network.Network):
         H_O, W_O = kwargs['batch']['src_inps'].shape[-2:]
         B, H, W = len(uvd), int(H_O * cfg.enerf.cas_config.render_scale[level]), int(W_O * cfg.enerf.cas_config.render_scale[level])
         uvd[..., 0], uvd[..., 1] = (uvd[..., 0]) / (W-1), (uvd[..., 1]) / (H-1)
-        
         vox_feat = utils.get_vox_feat(uvd.reshape(B, -1, 3), feat_volume)
         img_feat_rgb_dir = utils.get_img_feat(world_xyz, img_feat_rgb, batch, self.training, level) # B * N * S * (8+3+4)
-        
         net_output = nerf_model(vox_feat, img_feat_rgb_dir)
         net_output = net_output.reshape(B, -1, N_samples, net_output.shape[-1])
         
@@ -147,11 +145,7 @@ class Network(network.Network):
             mask = mask.reshape(B, -1, N_samples)
             # mask = torch.ones_like(mask)
         
-        outputs = {
-            'net_output': net_output,
-            'z_vals': z_vals,
-            'mask': mask
-        }
+        outputs = {'net_output': net_output, 'z_vals': z_vals, 'mask': mask}
         return outputs
 
     def batchify_rays_for_mlp(self, rays, **kwargs):
@@ -170,10 +164,8 @@ class Network(network.Network):
         net_outputs = torch.stack([outputs[f'net_output_view{i}'] for i in range(K)], dim=1)
         masks = torch.stack([outputs[f'mask_view{i}'] for i in range(K)], dim=1)
         z_vals = torch.stack([outputs[f'z_vals_view{i}'] for i in range(K)], dim=1)
-        
         masks_sum = masks.unsqueeze(1).sum(2)
         masks = torch.where(masks_sum > 0, masks / masks_sum, 1 / K)
-                    
         volume_render_outputs = utils.raw2outputs_blend(net_outputs, masks, z_vals, cfg.enerf.white_bkgd)
         return volume_render_outputs
 

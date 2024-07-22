@@ -651,7 +651,11 @@ def raw2outputs_blend(raws, masks, z_vals, white_bkgd=False):
     rgb_map_full = torch.sum((T_full.unsqueeze(1).repeat(1, K, 1, 1)*alpha_all*masks)[...,None] * rgb_all, -2)  # [B, K, N_rays, 3]
     rgb_map_full = torch.sum(rgb_map_full, dim=1) # [B, N_rays, 3]
     
-    depth_map_full = torch.sum(weights_full.unsqueeze(1).repeat(1, K, 1, 1)*z_vals.detach(), -1)
+    if z_vals is not None:
+        weights_full = F.softmax(weights_full, dim=-1)
+        depth_map_full = torch.sum(weights_full*z_vals.detach().mean(1), -1)
+    else:
+        depth_map_full = None
     
     if white_bkgd:
         raise NotImplementedError

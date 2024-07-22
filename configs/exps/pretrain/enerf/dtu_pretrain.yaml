@@ -2,6 +2,8 @@ task: pretrain
 gpus: [0]
 exp_name: enerf
 
+fps: 60
+
 # module
 train_dataset_module: lib.datasets.dtu.base
 test_dataset_module: lib.datasets.dtu.base

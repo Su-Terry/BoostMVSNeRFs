@@ -31,7 +31,6 @@ class NetworkWrapper(nn.Module):
                 render_scale = cfg.enerf.cas_config.render_scale[i]
                 B, S, C, H, W = batch['src_inps'].shape
                 H, W = int(H * render_scale), int(W * render_scale)
-                # h, w = batch['meta'][f'h_{i}'], batch['meta'][f'w_{i}']
                 inp = output[f'rgb_level{i}'].reshape(B, H, W, 3).permute(0, 3, 1, 2)
                 tar = batch[f'rgb_{i}'].reshape(B, H, W, 3).permute(0, 3, 1, 2)
                 perceptual_loss = self.perceptual_loss(inp, tar)
@@ -55,4 +54,3 @@ class NetworkWrapper(nn.Module):
         image_stats = {}
 
         return output, loss, scalar_stats, image_stats
-

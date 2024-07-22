@@ -11,7 +11,6 @@ import lpips
 import imageio
 from lib.utils import img_utils
 import cv2
-from PIL import Image
 
 
 class Evaluator:
@@ -41,21 +40,9 @@ class Evaluator:
         for i in range(cfg.enerf.cas_config.num):
             if not cfg.enerf.cas_config.render_if[i]:
                 continue
-            H, W = batch['src_inps'].shape[-2:]
-            s = cfg.enerf.cas_config.render_scale[i]
-            H, W = int(H*s), int(W*s)
-            if batch['meta']['split'] == 'train':
-                h, w = H, W
-            else:
-                h, w = batch['meta'][f'h_{i}'][0], batch['meta'][f'w_{i}'][0]
-            
-            pred_rgb_ims = []
-            for b in range(B):
-                pred_rgb_im = Image.fromarray((output[f'rgb_level{i}'][b].reshape(H, W, 3).detach().cpu().numpy()*255.).astype(np.uint8))
-                pred_rgb_im = pred_rgb_im.resize((w, h), Image.LANCZOS)
-                pred_rgb_ims.append(np.array(pred_rgb_im).astype(np.float32) / 255.)
-            
-            pred_rgb = np.stack(pred_rgb_ims, axis=0)
+            render_scale = cfg.enerf.cas_config.render_scale[i]
+            h, w = int(H*render_scale), int(W*render_scale)
+            pred_rgb = output[f'rgb_level{i}'].reshape(B, h, w, 3).detach().cpu().numpy()
             gt_rgb   = batch[f'rgb_{i}'].reshape(B, h, w, 3).detach().cpu().numpy()
 
             masks = (batch[f'msk_{i}'].reshape(B, h, w).cpu().numpy() >= 1).astype(np.uint8)
@@ -72,7 +59,7 @@ class Evaluator:
                     self.scene_ssims[batch['meta']['scene'][b]+f'_level{i}'] = []
                     self.scene_lpips[batch['meta']['scene'][b]+f'_level{i}'] = []
                 # self.scene_lpips[batch['meta']['scene'][b]] = []
-                if cfg.save_result:
+                if cfg.save_result and i == 1:
                     img = img_utils.horizon_concate(gt_rgb[b], pred_rgb[b])
                     img_path = os.path.join(cfg.result_dir, '{}_{}_{}.png'.format(batch['meta']['scene'][b], batch['meta']['tar_view'][b].item(), batch['meta']['frame_id'][b].item()))
                     imageio.imwrite(img_path, (img*255.).astype(np.uint8))
@@ -86,9 +73,9 @@ class Evaluator:
                     self.psnrs.append(psnr_item)
                 self.scene_psnrs[batch['meta']['scene'][b]+f'_level{i}'].append(psnr_item)
 
-                ssim_item = ssim((gt_rgb[b]*255).astype(np.uint8), (pred_rgb[b]*255).astype(np.uint8), channel_axis=-1)
+                ssim_item = ssim(gt_rgb[b], pred_rgb[b], multichannel=True)
                 if i == cfg.enerf.cas_config.num-1:
-                   self.ssims.append(ssim_item)
+                    self.ssims.append(ssim_item)
                 self.scene_ssims[batch['meta']['scene'][b]+f'_level{i}'].append(ssim_item)
 
                 if cfg.eval_lpips:

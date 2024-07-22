@@ -36,7 +36,7 @@ def run_network():
             total_time += time.time() - start
     print(total_time / len(data_loader))
     
-def run_preprocess():
+def run_preprocess(split='test'):
     from lib.datasets import make_data_loader
     from lib.networks import make_network
     from lib.utils import net_utils
@@ -49,14 +49,17 @@ def run_preprocess():
                            epoch=cfg.test.epoch)
     network.eval()
     
-    data_loader_train = make_data_loader(cfg, is_train=True)
-    data_loader_test = make_data_loader(cfg, is_train=False)
-    
-    print("\033[93mPreprocessing train set...\033[0m")
-    outputs_train = get_view_selection(data_loader_train, network)
-    # outputs_train = {}
+    if split == 'train':
+        print("\033[93mPreprocessing train set...\033[0m")
+        data_loader_train = make_data_loader(cfg, is_train=True)
+        outputs_train = get_view_selection(data_loader_train, network)
+    else:
+        outputs_train = {}
+        
     print("\033[93mPreprocessing test set...\033[0m")
+    data_loader_test = make_data_loader(cfg, is_train=False)
     outputs_test = get_view_selection(data_loader_test, network)
+    
     outputs = {**outputs_train, **outputs_test}
     
     # dump outputs to json file
@@ -82,6 +85,12 @@ def get_view_selection(data_loader, network):
     return outputs
 
 def run_evaluate():
+    if cfg.get('require_view_selection'):
+        view_selection_file = os.path.join(cfg.result_dir, f'view_selection.json')
+        if not os.path.exists(view_selection_file):
+            print("\033[93mView selection file not found. Preprocessing...\033[0m")
+            run_preprocess()
+    
     from lib.datasets import make_data_loader
     from lib.evaluators import make_evaluator
     import tqdm
@@ -120,6 +129,12 @@ def run_evaluate():
 
 
 def run_visualize():
+    if cfg.get('require_view_selection'):
+        view_selection_file = os.path.join(cfg.result_dir, f'view_selection.json')
+        if not os.path.exists(view_selection_file):
+            print("\033[93mView selection file not found. Preprocessing...\033[0m")
+            run_preprocess()
+    
     from lib.networks import make_network
     from lib.datasets import make_data_loader
     from lib.utils.net_utils import load_network
@@ -146,9 +161,4 @@ def run_visualize():
     visualizer.summarize()
 
 if __name__ == '__main__':
-    if cfg.get('require_view_selection'):
-        view_selection_file = os.path.join(cfg.result_dir, f'view_selection.json')
-        if not os.path.exists(view_selection_file):
-            print("\033[93mView selection file not found. Preprocessing...\033[0m")
-            run_preprocess()
     globals()['run_' + args.type]()

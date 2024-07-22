@@ -35,10 +35,8 @@ class Network(nn.Module):
         H_O, W_O = kwargs['batch']['src_inps'].shape[-2:]
         B, H, W = len(uvd), int(H_O * cfg.enerf.cas_config.render_scale[level]), int(W_O * cfg.enerf.cas_config.render_scale[level])
         uvd[..., 0], uvd[..., 1] = (uvd[..., 0]) / (W-1), (uvd[..., 1]) / (H-1)
-        
         vox_feat = utils.get_vox_feat(uvd.reshape(B, -1, 3), feat_volume)
         img_feat_rgb_dir = utils.get_img_feat(world_xyz, img_feat_rgb, batch, self.training, level) # B * N * S * (8+3+4)
-        
         net_output = nerf_model(vox_feat, img_feat_rgb_dir)
         net_output = net_output.reshape(B, -1, N_samples, net_output.shape[-1])
         outputs = utils.raw2outputs(net_output, z_vals, cfg.enerf.white_bkgd)
@@ -102,6 +100,8 @@ class Network(nn.Module):
                     im_feat=feats[f'level_{im_feat_level}'],
                     nerf_model=getattr(self, f'nerf_{i}'),
                     level=i)
+            # if i == 1:
+                # self.forward_render(ret_i, batch)
             if cfg.enerf.cas_config.depth_inv[i]:
                 ret_i.update({'depth_mvs': 1./depth})
             else:
@@ -110,5 +110,4 @@ class Network(nn.Module):
             if ret_i['rgb'].isnan().any():
                 __import__('ipdb').set_trace()
             ret.update({key+f'_level{i}': ret_i[key] for key in ret_i})
-            
         return ret

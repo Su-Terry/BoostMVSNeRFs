@@ -7,10 +7,13 @@
 [Video](https://www.youtube.com/watch?v=tX4EkFgm0ng) / 
 [Evaluation Images (2 GB)](https://drive.google.com/drive/folders/1u8njbeysuBgLihxmpGRY5vePm1aacfPi)
 
-<a href="https://colab.research.google.com/github/Su-Terry/BoostMVSNeRFs/blob/main/BoostMVSNeRFs_DEMO.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open in Colab"></a> Simple BoostMVSNeRFs DEMO
-
 ## News
 - **07/23/2024** Code Release!
+
+## Demo
+| Description      | Link |
+| ----------- | ----------- |
+| Simple BoostMVSNeRFs DEMO | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Su-Terry/BoostMVSNeRFs/blob/main/BoostMVSNeRFs_DEMO.ipynb)|
 
 ## Installation
 

@@ -1,5 +1,5 @@
 parent_cfg: configs/exps/evaluate/enerf_ours/free_eval.yaml
-save_tag: custom
+exp_name: custom
 
 enerf:
     test_input_views: 12

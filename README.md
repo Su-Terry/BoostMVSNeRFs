@@ -3,11 +3,13 @@
 [**BoostMVSNeRFs: Boosting MVS-based NeRFs to Generalizable View Synthesis in Large-scale Scenes**](https://arxiv.org/abs/24XX.XXXXX)  
 *Chih-Hai Su**, *Chih-Yao Hu**, *Shr-Ruei Tsai**, *Jie-Ying Lee**, *Chin-Yang Lin*, and *Yu-Lun Liu*  
 *Proceedings of SIGGRAPH 2024*  
-[Project Page](https://su-terry.github.io/BoostMVSNeRFs/) / Arxiv / Video / [Evaluation Images (2 GB)](https://drive.google.com/drive/folders/1u8njbeysuBgLihxmpGRY5vePm1aacfPi)
+[Project Page](https://su-terry.github.io/BoostMVSNeRFs/) / Arxiv / 
+[Video](https://www.youtube.com/watch?v=tX4EkFgm0ng) / 
+[Evaluation Images (2 GB)](https://drive.google.com/drive/folders/1u8njbeysuBgLihxmpGRY5vePm1aacfPi)
 
 
 ## News
-- **06/01/2024** Code Release!
+- **07/23/2024** Code Release!
 
 ## Installation
 
@@ -131,7 +133,7 @@ bash scripts/exps/evaluate/free_ft.sh mvsnerf_ours grass
 ```
 
 ## Run BoostMVSNeRFs on your custom data
-Place your photos of each viewport in the `$workspace/custom/` directory. If you have recorded the scene as a video, run `python scripts/mp4toimgs.py <your_video.mp4>` to generate the frames.
+Place your photos of each viewport in the `$workspace/custom/images` directory. If you have recorded the scene as a video, run `python scripts/mp4toimgs.py <your_video.mp4>` to generate the frames.
 
 Next, we recommend using the imgs2poses.py script from the [LLFF](https://github.com/Fyusion/LLFF/tree/master) code.
 
@@ -144,3 +146,13 @@ bash scripts/custom.sh
 ## Citation
 
 If you find this code useful for your research, please use the following BibTeX entry.
+```
+@inproceedings{su2024boostmvsnerfs,
+  title={BoostMVSNeRFs: Boosting MVS-based NeRFs to Generalizable 
+          View Synthesis in Large-scale Scenes},
+  author={Su, Chih-Hai and Hu, Chih-Yao and Tsai, Shr-Ruei and 
+          Lee, Jie-Ying and Lin, Chin-Yang and Liu, Yu-Lun},
+  booktitle={SIGGRAPH 2024 Conference Papers},
+  year={2024}
+}
+```

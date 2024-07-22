@@ -105,6 +105,7 @@ def run_evaluate():
                            resume=cfg.resume,
                            epoch=cfg.test.epoch)
     network.eval()
+    
 
     data_loader = make_data_loader(cfg, is_train=False)
     evaluator = make_evaluator(cfg)

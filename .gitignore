@@ -8,7 +8,6 @@ __pycache__/
 *.json
 *.pth
 *.npy
-*.ipynb
 
 # Development
 docs/videos/free/

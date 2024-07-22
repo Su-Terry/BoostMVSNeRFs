@@ -3,10 +3,10 @@ import os
 from lib.config import cfg
 import imageio
 import random
-from lib.config import cfg
 from PIL import Image
 import torch
 from lib.datasets import enerf_utils
+import cv2
 
 class Dataset:
     def __init__(self, **kwargs):
@@ -72,7 +72,6 @@ class Dataset:
         index, input_views_num = index_meta
         scene, tar_view, src_views, depth_ranges, directions = self.metas[index]
         scene_info = self.scene_infos[scene]
-
         tar_img, tar_mask, tar_ext, tar_ixt = self.read_tar(scene_info, tar_view)
         src_inps, src_exts, src_ixts = self.read_src(scene_info, src_views)
 
@@ -93,12 +92,10 @@ class Dataset:
         ret.update({'depth_ranges': depth_ranges.astype(np.float32)})
 
         for i in range(cfg.enerf.cas_config.num):
-            _, rgb, msk = enerf_utils.build_rays(tar_img, tar_ext, tar_ixt, tar_mask, i, self.split)
-            rays_o, rays_d = self.get_rays(directions, torch.from_numpy(np.linalg.inv(tar_ext)[:3, :]))
-            rays = torch.cat([rays_o, rays_d, depth_ranges.min() * torch.ones_like(rays_o[:, :1]) * 0.8, depth_ranges.max() * torch.ones_like(rays_o[:, :1]) * 1.2], 1)
+            rays, rgb, msk = enerf_utils.build_rays(tar_img, tar_ext, tar_ixt, tar_mask, i, self.split)
             ret.update({f'rays_{i}': rays, f'rgb_{i}': rgb.astype(np.float32), f'msk_{i}': msk})
-            # s = cfg.enerf.cas_config.volume_scale[i]
-            ret['meta'].update({f'h_{i}': int(H), f'w_{i}': int(W)})
+            s = cfg.enerf.cas_config.volume_scale[i]
+            ret['meta'].update({f'h_{i}': int(H*s), f'w_{i}': int(W*s)})
         return ret
     
     def get_rays(self, directions, c2w):
@@ -144,19 +141,13 @@ class Dataset:
         for idx in src_ids:
             img, orig_size = self.read_image(scene, idx)
             imgs.append(((img/255.)*2-1).astype(np.float32))
-            # imgs.append((img/255.).astype(np.float32))
             ixt, ext, _ = self.read_cam(scene, idx, orig_size)
             ixts.append(ixt)
             exts.append(ext)
         return np.stack(imgs), np.stack(exts), np.stack(ixts)
 
     def read_tar(self, scene, view_idx):
-        if self.split == 'train':
-            # Fixed image size
-            img, orig_size = self.read_image(scene, view_idx, is_gt=False)
-        else:
-            # Original image size for evaluation
-            img, orig_size = self.read_image(scene, view_idx, is_gt=True)
+        img, orig_size = self.read_image(scene, view_idx)
         img = (img/255.).astype(np.float32)
         ixt, ext, _ = self.read_cam(scene, view_idx, orig_size)
         mask = np.ones_like(img[..., 0]).astype(np.uint8)
@@ -170,14 +161,10 @@ class Dataset:
         return ixt, np.linalg.inv(ext), 1
 
     def read_image(self, scene, view_idx, is_gt=False):
-        # image_path = os.path.join(self.data_root, scene['scene_name'], 'images_4', scene['image_names'][view_idx])
         image_path = os.path.join(self.data_root, scene['scene_name'], 'images_2', scene['image_names'][view_idx])
         img = (np.array(imageio.imread(image_path))).astype(np.float32)
         orig_size = img.shape[:2][::-1]
-        img = Image.fromarray(img.astype(np.uint8))
-        if not is_gt:
-            img = img.resize(self.input_h_w[::-1], Image.LANCZOS)
-
+        img = cv2.resize(img, self.input_h_w[::-1], interpolation=cv2.INTER_AREA)
         return np.array(img), orig_size
 
     def __len__(self):

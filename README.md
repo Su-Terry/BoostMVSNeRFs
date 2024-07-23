@@ -3,7 +3,8 @@
 [**BoostMVSNeRFs: Boosting MVS-based NeRFs to Generalizable View Synthesis in Large-scale Scenes**](https://arxiv.org/abs/24XX.XXXXX)  
 *Chih-Hai Su**, *Chih-Yao Hu**, *Shr-Ruei Tsai**, *Jie-Ying Lee**, *Chin-Yang Lin*, and *Yu-Lun Liu*  
 *Proceedings of SIGGRAPH 2024*  
-[Project Page](https://su-terry.github.io/BoostMVSNeRFs/) / Arxiv / 
+[Project Page](https://su-terry.github.io/BoostMVSNeRFs/) / 
+[Arxiv](http://arxiv.org/abs/2407.15848) / 
 [Video](https://www.youtube.com/watch?v=tX4EkFgm0ng) / 
 [Evaluation Images (2 GB)](https://drive.google.com/drive/folders/1u8njbeysuBgLihxmpGRY5vePm1aacfPi)
 

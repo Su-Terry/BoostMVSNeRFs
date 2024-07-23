@@ -45,7 +45,7 @@ class Dataset:
             ixts[:, 0, 2], ixts[:, 1, 2] = poses[:, 1, 4]/2., poses[:, 0, 4]/2.
             ixts[:, :2] *= 0.5
 
-            img_paths = sorted([item for item in os.listdir(os.path.join(self.data_root, scene, 'images_2')) if '.png' in item])
+            img_paths = sorted([item for item in os.listdir(os.path.join(self.data_root, scene, 'images_2')) if '.png' in item or 'jpg' in item or 'JPG' in item])
             depth_ranges = pose_bounds[:, -2:]
             scene_info = {'ixts': ixts.astype(np.float32), 'c2ws': c2ws.astype(np.float32), 'image_names': img_paths, 'depth_ranges': depth_ranges.astype(np.float32)}
             scene_info['scene_name'] = scene
